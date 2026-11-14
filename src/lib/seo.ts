@@ -157,6 +157,27 @@ export function siteWeb(base: URL | string): JsonLd {
   };
 }
 
+/**
+ * L'app « Permis Côtier » : gratuite, sur iPhone, iPad et Mac. Ne dit que ce
+ * que la page montre. Pas de `aggregateRating` : personne n'a noté.
+ */
+export function logicielApp(base: URL | string): JsonLd {
+  return {
+    '@type': 'SoftwareApplication',
+    '@id': absolue('/app#app', base),
+    name: 'Permis Côtier',
+    url: absolue('/app', base),
+    downloadUrl: APP_STORE.url,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'iOS 16, iPadOS 16, macOS 15',
+    inLanguage: SITE.langue,
+    isAccessibleForFree: true,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+    author: personneAuteur(base),
+    isPartOf: { '@id': absolue('/#site', base) },
+  };
+}
+
 export interface Miette {
   nom: string;
   chemin: string;

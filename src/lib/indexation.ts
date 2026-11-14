@@ -38,7 +38,7 @@ export const INDEXABLES: readonly string[] = [
  * Les pages de la liste qui ne sont pas encore construites. Le garde-fou de
  * build les tolère absentes et refuse de les voir au sitemap.
  */
-export const PAS_ENCORE: readonly string[] = ['/app'];
+export const PAS_ENCORE: readonly string[] = [];
 
 /** Un chemin tel que le sert le site : `cheminServi()` de `seo.ts`. */
 export function cheminIndexable(chemin: string): boolean {
