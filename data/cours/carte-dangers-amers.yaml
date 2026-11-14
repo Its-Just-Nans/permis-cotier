@@ -5,12 +5,16 @@ accroche: >-
   d’une étoile magenta suivie d’une ligne de lettres. Ce sont les cailloux à éviter et
   les repères à viser.
 etapes:
-  - titre: Une croix ou un astérisque, c’est une roche qui découvre
+  - titre: L’astérisque découvre, la croix reste sous l’eau
     texte: >-
-      Une roche qui sort de l’eau à basse mer est dessinée par une croix ou un astérisque,
-      souvent accompagnée de sa hauteur soulignée, comptée au-dessus du zéro des cartes.
+      Une roche qui couvre et découvre est dessinée par un astérisque, souvent accompagné
+      de sa hauteur soulignée, comptée au-dessus du zéro des cartes.
 
-      Une roche à fleur d’eau ou dangereuse est entourée d’un pointillé de danger.
+      Une croix entourée de quatre points marque une roche à fleur d’eau, au niveau du
+      zéro des cartes. Une croix seule, c’est une roche toujours submergée dont on ignore
+      la profondeur.
+
+      Le pointillé de danger entoure tout danger pour la navigation.
   - titre: Le fuseau est une épave, l’ancre un mouillage
     texte: >-
       Une épave se dessine par un symbole en fuseau, barré ou non selon qu’elle est
@@ -45,7 +49,7 @@ piege: >-
   minuscule pour les mètres de hauteur, M majuscule pour les milles de portée, et la
   hauteur est toujours écrite avant la portée.
 retenir:
-  - "Croix ou astérisque : roche qui découvre. Pointillé de danger : roche à fleur d’eau."
+  - "Astérisque : roche qui découvre. Croix et quatre points : à fleur d’eau. Croix seule : toujours submergée."
   - "Fuseau : épave. Ancre : mouillage. Tireté magenta : zone réglementée."
   - "Un feu se lit dans l’ordre : caractère, couleur, période, hauteur, portée."
   - "12m est la hauteur du feu, 9M sa portée en milles."

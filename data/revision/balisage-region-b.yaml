@@ -1,7 +1,7 @@
 cours: balisage-region-b
 resume: >-
-  Une seule chose change en région B : la couleur des marques latérales. Les formes, le sens conventionnel
-  et toutes les autres marques restent les mêmes.
+  Une seule chose change en région B : la couleur des marques latérales, voyant compris. Les formes, le
+  sens conventionnel et toutes les autres marques restent les mêmes.
 sections:
   - titre: Bâbord vert, tribord rouge, le sens reste le même
     notions: [region-b-lateral]
@@ -27,8 +27,8 @@ sections:
       - astuce: >-
           Si tu doutes de la couleur, la forme te remet dans le bon sens.
       - piege: >-
-          La question se joue sur un seul mot, la couleur. Formes, voyants et sens conventionnel sont
-          identiques.
+          La question se joue sur un seul mot, la couleur. Formes et sens conventionnel sont identiques ;
+          le voyant garde sa forme mais prend la couleur du corps.
 
   - titre: Quelles côtes sont en région B
     largeur: demie

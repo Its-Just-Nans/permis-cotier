@@ -96,7 +96,7 @@ sections:
             - [Vue, "6/10 d’un œil et 4/10 de l’autre, ou 5/10 de chaque œil, correction admise. Champ visuel périphérique normal, sens chromatique satisfaisant"]
             - [Audition, "Voix chuchotée à 0,50 mètre, voix haute à 5 mètres, de chaque oreille"]
             - [Corps, "Prise en main satisfaisante, membres inférieurs fonctionnels"]
-            - [Santé, Toute affection exposant à une perte brutale de connaissance entraîne l’inaptitude]
+            - [Santé, "Toute affection exposant à une perte brutale de connaissance entraîne en principe l’inaptitude. Une affection bien contrôlée par le traitement (diabète, épilepsie) peut être tolérée après examen approfondi"]
       - regles:
           - "Membres inférieurs non conformes : tu passes l’examen, mais tu n’embarques pas seul. Une tierce personne de 16 ans au moins, apte sans restriction, t’accompagne. Elle n’a pas besoin du permis."
 

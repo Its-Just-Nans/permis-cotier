@@ -110,7 +110,7 @@ sections:
     notions: [meteo-bulletin]
     blocs:
       - regles:
-          - Le bulletin météorologique spécial (BMS) est un avis diffusé à part, hors des heures normales, dès qu’un vent de force 7 au moins est attendu ou observé. Il prime sur le bulletin de côte.
+          - "Le bulletin météorologique spécial (BMS) est un avis diffusé à part, hors des heures normales, dès qu’un vent fort est attendu ou observé : force 7 pour le BMS côte, force 8 pour le large et le grand large. Il prime sur le bulletin de côte."
           - "Le bulletin de côte donne la situation générale, puis par zone, dans cet ordre : vent, mer, temps, visibilité. La marée et la pression n’en sont pas des rubriques."
       - piege: >-
           Attendre l’heure du bulletin pour savoir s’il y a un avis. Un bulletin lu la veille au soir peut
