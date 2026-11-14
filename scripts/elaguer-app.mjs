@@ -34,6 +34,7 @@ const racine = process.argv[2] ?? 'dist-app';
 /** Ce qui sort du bundle, et la raison de chacun. */
 const A_RETIRER = [
   ['question', 'les 483 pages de référencement, une par question'],
+  ['app', 'la page qui présente l’app, écrite pour le site'],
   ['partage', 'les images de partage social'],
   ['vitrine', 'les captures et le badge App Store de l’accueil du site'],
   ['sitemap-index.xml', 'sitemap'],

@@ -18,6 +18,8 @@ import {
   titreFiche,
   descriptionFiche,
   descriptionsDesQuestions,
+  logicielApp,
+  APP_STORE,
 } from './seo';
 
 const BASE = new URL('https://lepermiscotier.fr');
@@ -387,5 +389,18 @@ describe('descriptionsDesQuestions', () => {
       { id: 'meteo-0002', enonce: 'Force 8 ?', explication: 'Coup de vent.' },
     ];
     expect(() => descriptionsDesQuestions(jumelles)).toThrow(/meteo-0001/);
+  });
+});
+
+describe('logicielApp', () => {
+  it('déclare une app gratuite, sur Apple seulement, avec son lien de téléchargement', () => {
+    const app = logicielApp(BASE) as Record<string, any>;
+    expect(app['@type']).toBe('SoftwareApplication');
+    expect(app.offers).toEqual({ '@type': 'Offer', price: '0', priceCurrency: 'EUR' });
+    expect(app.operatingSystem).toMatch(/iOS/);
+    expect(app.operatingSystem).toMatch(/macOS/);
+    expect(app.downloadUrl).toBe(APP_STORE.url);
+    expect(app.url).toBe('https://lepermiscotier.fr/app');
+    expect(app.aggregateRating).toBeUndefined();
   });
 });

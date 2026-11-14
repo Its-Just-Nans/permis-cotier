@@ -1,0 +1,120 @@
+---
+import Base from '../layouts/Base.astro';
+import { APP_STORE, SITE, logicielApp } from '../lib/seo';
+
+const base = Astro.site ?? new URL(SITE.domaine);
+const CAPTURE = { width: 640, height: 1391 };
+const captures = [
+  {
+    src: '/vitrine/cours.webp',
+    alt: 'L’écran du cours dans l’app : la leçon à reprendre, puis les chapitres du parcours avec leur avancement.',
+  },
+  {
+    src: '/vitrine/examen.webp',
+    alt: 'Une question d’examen blanc : un feu d’écluse en image, le chrono à treize secondes, la première question sur quarante, trois propositions et le bouton « Passer ».',
+  },
+  {
+    src: '/vitrine/resultat.webp',
+    alt: 'Le résultat d’un examen blanc : 36 sur 40, reçu avec quatre erreurs sur les cinq admises, le pavillon Q hissé, puis le score de chaque thème.',
+  },
+];
+---
+
+<Base
+  titre="L’app Permis Côtier : iPhone, iPad et Mac"
+  description="L’app gratuite pour réviser le permis côtier sur iPhone, iPad et Mac : cours, examens blancs, hors ligne, sans compte ni publicité."
+  miettes={[{ nom: 'L’app', chemin: '/app' }]}
+  jsonLd={[logicielApp(base)]}
+>
+  <article class="page page--etroite app" style="padding-block:2.5rem 0">
+    <h1>L’app Permis Côtier, sur iPhone, iPad et Mac</h1>
+    <p class="app__chapo">
+      Le même cours et la même banque de questions que le site, dans une app gratuite. Pas de
+      compte, pas de publicité, pas de traceur.
+    </p>
+
+    <div class="app__liens">
+      <a class="app__badge" href={APP_STORE.url} data-mesure="app-app-store">
+        <img src="/vitrine/app-store.svg" alt="Télécharger dans l’App Store" width="190" height="60" />
+      </a>
+      <figure class="app__qr">
+        <img src="/vitrine/qr-app-store.svg" alt="" width="88" height="88" loading="lazy" />
+        <figcaption>Sur ordinateur, vise ce code avec l’appareil photo de ton iPhone.</figcaption>
+      </figure>
+    </div>
+
+    <section>
+      <h2>Ce que l’app fait de plus que le site</h2>
+      <ul class="app__plus">
+        <li><strong>Hors ligne.</strong> Tout fonctionne sans réseau, en mer comme dans le métro.</li>
+        <li><strong>Des rappels</strong> avant la date de ton examen, si tu en veux.</li>
+        <li><strong>Des signaux qui s’entendent.</strong> Les signaux sonores se jouent, et la correction se sent sous le doigt.</li>
+        <li><strong>Sur Mac, tout au clavier.</strong> A à D pour cocher, Entrée pour valider, Échap pour arrêter l’examen.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Ce qui est pareil que sur le site</h2>
+      <p>
+        Le cours, l’examen blanc au format 2022, l’entraînement thème par thème et la série de
+        tes erreurs à revoir. Chaque question cite le texte dont elle est tirée. Ta progression
+        reste sur ton appareil : sans compte, rien ne part ailleurs.
+      </p>
+    </section>
+
+    <ul class="app__captures" aria-label="Captures de l’app">
+      {captures.map((c) => (
+        <li>
+          <figure class="telephone">
+            <img src={c.src} alt={c.alt} {...CAPTURE} loading="lazy" decoding="async" />
+          </figure>
+        </li>
+      ))}
+    </ul>
+
+    <section>
+      <h2>Sur quels appareils ?</h2>
+      <p>
+        iPhone et iPad à partir d’iOS 16, Mac à partir de macOS 15. Il n’y a pas d’app Android :
+        le site fait la même chose, et s’installe sur l’écran d’accueil depuis le menu du
+        navigateur.
+      </p>
+      <p>
+        Pas encore décidé ? <a href="/test-permis-cotier">Essaie dix questions sur le site</a>,
+        sans rien installer. Qui tient l’app et ce qu’elle garde de toi :
+        <a href="/a-propos">à propos</a>.
+      </p>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .app__chapo { font-size: 1.25rem; line-height: 1.45; color: var(--texte-doux); margin: 1.5rem 0 2rem; max-width: 34rem; }
+  .app__liens { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 2rem; margin-bottom: 3rem; }
+  .app__badge { display: inline-block; line-height: 0; border-radius: 0.6rem; }
+  .app__badge img { width: 11.875rem; height: auto; }
+  .app__qr { display: none; margin: 0; align-items: center; gap: 1rem; }
+  .app__qr img { width: 5.5rem; height: 5.5rem; }
+  .app__qr figcaption { max-width: 15ch; font-size: 0.875rem; color: var(--texte-doux); line-height: 1.35; }
+  @media (hover: hover) and (pointer: fine) { .app__qr { display: flex; } }
+  .app section { margin-top: 2.75rem; }
+  .app section p { max-width: var(--mesure); }
+  .app__plus { list-style: none; margin: 1rem 0 0; padding: 0; max-width: var(--mesure); }
+  .app__plus li { padding: 0.75rem 0; border-top: 1px solid var(--filet); }
+  .app__plus li:last-child { border-bottom: 1px solid var(--filet); }
+  .app__captures { list-style: none; margin: 3rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; max-width: none; }
+  .app__captures li { max-width: none; margin: 0; }
+  .telephone {
+    margin: 0;
+    border: 0.25rem solid #191918;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    background: #191918;
+    outline: 1px solid var(--filet-fort);
+  }
+  .telephone img { display: block; width: 100%; height: auto; aspect-ratio: 640 / 1391; }
+  @media (min-width: 40rem) {
+    .app__captures { gap: 1.5rem; }
+    .telephone { border-width: 0.4rem; border-radius: 2.2rem; }
+  }
+</style>
