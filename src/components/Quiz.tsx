@@ -51,6 +51,8 @@ interface Props {
   notion?: { code: string; nom: string };
   /** Série des seules questions ratées, tous thèmes mêlés. */
   revoir?: boolean;
+  /** Dix questions tirées dans toute la banque : la voie courte de l'examen. */
+  melange?: boolean;
   /**
    * La première leçon du parcours, que l'examen propose à qui n'a encore rien
    * révisé. Passée par la page pour la même raison que `notion` : le parcours
@@ -83,6 +85,7 @@ function Partie({
   theme,
   notion,
   revoir = false,
+  melange = false,
   premiereLecon,
 }: Props & { questions: QuestionAffichable[]; banque: QuestionAffichable[] }) {
   // La progression est lue au montage, puis relue seulement tant que l'examen
@@ -162,9 +165,11 @@ function Partie({
       ? '/examen'
       : revoir
         ? '/revoir'
-        : notion
-          ? `/entrainement/notion/${notion.code}`
-          : `/entrainement/${theme}`;
+        : melange
+          ? '/entrainement/melange'
+          : notion
+            ? `/entrainement/notion/${notion.code}`
+            : `/entrainement/${theme}`;
   const retourSerie = mode === 'examen' ? undefined : retour;
 
   /**
@@ -197,14 +202,16 @@ function Partie({
     ? 'Examen blanc'
     : revoir
       ? surLesErreurs ? 'Tes erreurs de l’examen' : 'Ta série du jour'
-      : notion
-        ? `Entraînement, ${notion.nom}`
-        : `Entraînement, ${nomDuTheme(theme ?? '')}`;
+      : melange
+        ? 'Dix questions mêlées'
+        : notion
+          ? `Entraînement, ${notion.nom}`
+          : `Entraînement, ${nomDuTheme(theme ?? '')}`;
 
   // Le nom que cette série porte dans la mesure. Les trois écrans du composant
   // sont trois parcours différents : les mêler dans un seul compteur rendrait
   // chaque chiffre illisible.
-  const nomSerie = mode === 'examen' ? 'examen' : revoir ? 'revoir' : 'entrainement';
+  const nomSerie = mode === 'examen' ? 'examen' : revoir ? 'revoir' : melange ? 'courte' : 'entrainement';
 
   // Les badges que la série fait gagner, gardés au geste, annoncés au résultat.
   const [gagnes, setGagnes] = useState<BadgeAnnonce[]>([]);

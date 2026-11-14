@@ -380,6 +380,7 @@ div.sources ul { margin: 0; }
 .depart__format li + li { border-top: 1px solid var(--filet); }
 .encadre__titre { font: inherit; font-weight: 600; margin: 0 0 0.4rem; }
 .depart__retour { margin: 0; }
+.depart__court { margin: 0; }
 /* La reprise et l'avertissement au novice ne s'affichent jamais ensemble. */
 .depart__reprise,
 .depart__novice { margin-top: 0.25rem; background: var(--fond-2); }

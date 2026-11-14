@@ -281,6 +281,43 @@ describe('clavier', () => {
   });
 });
 
+describe('la voie courte de l’écran de départ', () => {
+  it('propose dix questions mêlées en second, sans toucher au bouton principal', () => {
+    render(<Quiz mode="examen" questions={trois} />);
+    const lien = screen.getByRole('link', { name: /dix questions/i });
+    expect(lien.getAttribute('href')).toBe('/entrainement/melange');
+    expect(lien.getAttribute('data-mesure')).toBe('depart-court');
+    expect(lien.className).not.toContain('bouton--principal');
+    expect(screen.getByRole('button', { name: /Commencer l’examen/ }).className).toContain('bouton--principal');
+  });
+
+  it('se tait quand un examen est à reprendre : il y a déjà deux boutons', () => {
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({
+        version: VERSION_STOCKAGE,
+        questions: {},
+        examens: [],
+        dateExamen: null,
+        enCours: {
+          mode: 'examen',
+          theme: null,
+          ids: trois.map((q) => q.id),
+          index: 1,
+          selections: [['a'], [], []],
+          echeance: Date.now() + 12_000,
+          journal: [],
+          graine: 1,
+          majLe: Date.now(),
+        },
+      }),
+    );
+    render(<Quiz mode="examen" questions={trois} />);
+    expect(screen.getByText(/Tu avais un examen en cours/)).toBeTruthy();
+    expect(screen.queryByRole('link', { name: /dix questions/i })).toBeNull();
+  });
+});
+
 describe('avant un premier examen sans révision', () => {
   const premiereLecon = { chemin: '/cours/balisage/balisage-lateral', nom: 'Le balisage latéral' };
 

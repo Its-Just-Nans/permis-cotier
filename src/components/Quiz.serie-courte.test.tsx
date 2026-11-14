@@ -49,7 +49,7 @@ const banque = (n: number) => Array.from({ length: n }, (_, i) => question(`eclu
 
 const compteur = () => document.querySelector('.jeu__compteur')?.textContent ?? '';
 const enonceAffiche = () => screen.getByRole('heading', { level: 2 }).textContent ?? '';
-const idAffiche = () => /ecluses-\d{4}/.exec(enonceAffiche())![0];
+const idAffiche = () => /[a-z]+-\d{4}/.exec(enonceAffiche())![0];
 
 /** Joue `n` questions ; celles dont le rang est dans `fausses` sont ratées. */
 function jouer(n: number, fausses: readonly number[] = []): string[] {
@@ -185,6 +185,42 @@ describe('« Encore 10 »', () => {
     }
     expect(secondes).toContain(premieres[4]);
     expect(new Set(secondes).size).toBe(10);
+  });
+});
+
+describe('la série mêlée', () => {
+  const deuxThemes = [
+    ...banque(15),
+    ...Array.from({ length: 15 }, (_, i) => ({ ...question(`meteo-${String(i + 1).padStart(4, '0')}`), theme: 'meteo' })),
+  ];
+
+  it('tire dix questions de toute la banque, thèmes mêlés', () => {
+    render(<Quiz mode="entrainement" questions={deuxThemes} melange />);
+    expect(compteur()).toContain('sur 10');
+    const themes = new Set<string>();
+    for (let i = 0; i < 10; i++) {
+      themes.add(/([a-z]+)-\d{4}/.exec(enonceAffiche())![1]!);
+      fireEvent.click(screen.getByRole('button', { name: /Première proposition/ }));
+      fireEvent.click(screen.getByRole('button', { name: 'Valider' }));
+      fireEvent.click(screen.getByRole('button', { name: /Question suivante|Continuer/ }));
+    }
+    expect(screen.getByRole('button', { name: 'Encore 10' })).toBeTruthy();
+    expect(themes.size).toBeGreaterThan(1);
+  });
+
+  it('range la série en cours sous sa propre adresse', () => {
+    render(<Quiz mode="entrainement" questions={deuxThemes} melange />);
+    jouer(2);
+    const sauvee = JSON.parse(localStorage.getItem(CLE_STOCKAGE)!);
+    expect(JSON.stringify(sauvee.enCoursSerie)).toContain('/entrainement/melange');
+  });
+
+  it('se compte à part dans la mesure', () => {
+    const suivi = vi.fn();
+    (window as unknown as { umami: { track: typeof suivi } }).umami = { track: suivi };
+    render(<Quiz mode="entrainement" questions={deuxThemes} melange />);
+    expect(suivi).toHaveBeenCalledWith('courte-commence', expect.anything());
+    delete (window as unknown as { umami?: unknown }).umami;
   });
 });
 
