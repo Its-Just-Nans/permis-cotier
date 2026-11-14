@@ -6,10 +6,10 @@ statut: publie
 difficulte: 2
 enonce: >-
   Le corps d'une marque de danger isolé est noir, barré de rouge. Combien de larges
-  bandes horizontales rouges peut-il porter ?
+  bandes horizontales rouges le texte prévoit-il ?
 propositions:
   - id: a
-    texte: Une seule
+    texte: Une seule, jamais plus
   - id: b
     texte: Deux exactement
   - id: c
@@ -30,4 +30,4 @@ meta:
   cree_le: '2026-09-26'
   genere_par: claude
   relu_par: claude
-  relu_le: '2026-11-11'
+  relu_le: '2026-11-14'
