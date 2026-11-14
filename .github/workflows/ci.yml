@@ -126,6 +126,11 @@ jobs:
       - name: Audit SEO du build
         run: node scripts/audit-seo.mjs
 
+      # La liste blanche des pages indexables (`src/lib/indexation.ts`) : toute
+      # autre page en `noindex`, et un sitemap qui annonce la liste, rien de plus.
+      - name: Pages indexables du build
+        run: node scripts/verifier-indexation.mjs
+
       # La typographie française, relue sur le build : une espace ordinaire
       # avant « ; : ! ? » ou autour d'un guillemet ne casse aucun test et ne se
       # voit que dans `dist/`.

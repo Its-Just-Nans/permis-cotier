@@ -1,5 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
+import EssaiQuestion from '../components/EssaiQuestion.astro';
+import { questionsPubliees } from '../lib/banque';
+import { verifierSelection } from '../lib/test-gratuit';
+
+// Dix vraies questions de la banque, dans le HTML : un moteur les lit sans
+// JavaScript. Le build s'arrête si l'une a changé (`src/lib/test-gratuit.ts`).
+const questions = verifierSelection(await questionsPubliees());
 
 const sources = [
   {
@@ -33,6 +40,27 @@ const sources = [
         M’entraîner par thème
       </a>
     </div>
+
+    <section class="test__essai" aria-labelledby="test-dix">
+      <h2 id="test-dix">Dix questions pour te tester tout de suite</h2>
+      <p>
+        Une question par thème, tirées de la banque telles quelles. Coche ta réponse, valide, et
+        la correction arrive avec le texte dont elle est tirée.
+      </p>
+      <ol class="test__questions">
+        {questions.map((q, i) => (
+          <li>
+            <EssaiQuestion question={q} rang={i + 1} sansSuite consigne={i === 0} />
+          </li>
+        ))}
+      </ol>
+      <p class="test__suite">
+        <a class="bouton bouton--principal" href="/examen" data-mesure="test-examen-complet">
+          Passer l’examen blanc complet
+        </a>
+        <span class="discret">Quarante questions, vingt secondes chacune, cinq erreurs admises.</span>
+      </p>
+    </section>
 
     <section>
       <h2>Comment se déroule l’examen blanc ?</h2>
@@ -91,4 +119,7 @@ const sources = [
   .test section { margin-top: 2.75rem; }
   .test section p, .test li { max-width: var(--mesure); }
   .test li { margin-bottom: 0.5rem; }
+  .test__questions { list-style: none; margin: 1.5rem 0 0; padding: 0; display: grid; gap: 1.25rem; }
+  .test__questions li { max-width: none; margin: 0; }
+  .test__suite { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; margin-top: 1.75rem; }
 </style>

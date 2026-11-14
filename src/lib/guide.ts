@@ -39,11 +39,11 @@ export interface PageGuide {
 export const GUIDE: readonly PageGuide[] = [
   {
     slug: 'limites-du-permis-cotier',
-    titre: 'Jusqu’où peut-on aller avec le permis côtier ?',
+    titre: 'Permis côtier, distance : 6 milles d’un abri (11,1 km)',
     court: 'Ce que le permis côtier permet',
     question: 'Jusqu’à quelle distance le permis côtier autorise-t-il à naviguer ?',
     reponse:
-      'Jusqu’à 6 milles d’un abri, soit environ 11 kilomètres. Au-delà, il faut l’extension hauturière. Le décret ne fixe aucune limite de longueur ni de puissance pour le bateau conduit en mer.',
+      'Le permis côtier permet de naviguer jusqu’à 6 milles d’un abri, soit environ 11,1 km. Au-delà, il faut l’extension hauturière. Aucune limite de longueur ni de puissance en mer.',
     sources: [
       { texte: 'Décret n° 2007-1167 du 2 août 2007, article 2', ref: 'decret-2007-1167', fichier: 'article-2' },
       { texte: 'Décret n° 2007-1167 du 2 août 2007, article 3', ref: 'decret-2007-1167', fichier: 'article-3' },
