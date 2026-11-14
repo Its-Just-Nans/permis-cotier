@@ -88,6 +88,11 @@ jobs:
       - name: Vérifier les PDF des fiches de révision
         run: node scripts/fiches-pdf.mjs --verifier
 
+      # L'image de partage montre une question corrigée : si elle change de
+      # réponse ou sort de la banque, l'image mentirait.
+      - name: Vitrine de l'image de partage de l'image de partage
+        run: node scripts/partage.mjs --vitrine
+
       # Les bruitages de l'app sont calculés, pas enregistrés : un WAV retouché
       # à la main sortirait du contrôle du script qui le synthétise.
       - name: Vérifier les sons de l'app

@@ -6,63 +6,53 @@
  *     node scripts/partage.mjs --verifier # échoue si le fichier livré a dérivé
  *
  * C'est la seule image que voient ceux qui n'ont pas encore ouvert le site.
- * Elle montre donc la page qu'elle ouvre : la bande marine de l'accueil, sa
- * ligne de flottaison jaune, le panneau blanc et ses deux grands nombres, et,
- * en bas, une vraie question de la banque avec une proposition cochée.
- * Palette et formes sont celles de `global.css` et de DESIGN.md, à la valeur
- * près, aux deux écarts que `proposition()` explique.
+ * Elle montre donc la page qu'elle ouvre, à la DA « page calme » (DESIGN.md) :
+ * page blanche, l'en-tête et son filet, le titre de l'accueil, et à droite une
+ * vraie question de la banque, corrigée. Le jaune franc n'y sert qu'une fois.
  *
- * Rien de chiffré ni de cité n'est écrit en dur sans garde : les comptes sont
- * lus sur le disque à l'exécution, et la question montrée est confrontée à son
- * fichier avant d'être dessinée. Voir `VITRINE`.
+ * Rien n'y est chiffré : voir `texte()`. La question montrée est confrontée à
+ * son fichier avant d'être dessinée. Voir `VITRINE`.
  *
- * Deux réserves à connaître avant de toucher au dessin.
- *
- * La rastérisation ne voit pas Archivo, qui n'est livrée qu'en woff2 : le
- * texte est composé dans la pile de replis de `--sans`, donc en Helvetica
- * Neue. Elle n'a pas d'axe de largeur, et librsvg ignore `textLength` ; la
- * largeur 125 % du display est donc rendue par une mise à l'échelle
- * horizontale, `LARGE` ci-dessous, appliquée aux seuls titres et grands
- * nombres, comme `font-stretch` sur le site. Helvetica n'ayant pas de graisse
- * au-delà du gras, 800 y rend comme 700.
- *
- * Aucune mesure de texte n'est faite par le code : les retours à la ligne
- * sont écrits à la main et jugés sur le PNG produit. Rallonger une phrase
- * demande de rouvrir l'image.
+ * Le texte est composé en police système par librsvg, sans mesure : les
+ * retours à la ligne sont écrits à la main et jugés sur le PNG produit.
+ * Le rendu dépend des polices installées, d'où un `--verifier` local
+ * seulement ; la CI ne garde que la vitrine (`--vitrine`).
  */
-import { mkdirSync, readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const RACINE = dirname(dirname(fileURLToPath(import.meta.url)));
 const QUESTIONS = join(RACINE, 'data', 'questions');
-const COURS = join(RACINE, 'data', 'cours');
 const SORTIE = join(RACINE, 'public', 'partage');
 const FICHIER = join(SORTIE, 'le-permis-cotier.png');
 
 const LARGEUR = 1200;
 const HAUTEUR = 630;
 
-// Reprises telles quelles de `:root` dans src/styles/global.css.
-const MARINE = '#0b1d3a';
-const BLANC = '#ffffff';
+// Reprises telles quelles de `:root` dans src/styles/global.css (DA « page calme »).
+const FOND = '#ffffff';
+const TEXTE = '#37352f';
+const TEXTE_DOUX = '#6b6a65';
+const FILET = '#e9e9e7';
+const FILET_FORT = '#8e8c86';
+const ACTION = '#191918';
+const SUR_ACTION = '#ffffff';
+const VERT = '#3f8458';
+const VERT_PALE = '#e3f0e4';
+const VERT_TEXTE = '#245133';
 const JAUNE = '#ffc72c';
-const JAUNE_SOMBRE = '#c99a00';
-const JAUNE_PALE = '#fff1c2';
-const BANDE_DOUX = '#bcc9df';
-const TEXTE_DOUX = '#4c5c78';
-const FILET = '#cfd8e6';
 
-/** La pile de replis de `--sans` : Archivo n'est pas installée. */
-const SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
-/** Ce que `--large`, la largeur 125 % d'Archivo, devient ici. */
-const LARGE = 1.08;
-/** `--rayon` et `--bord`, en pixels. */
-const RAYON = 16;
-const BORD = 3;
-/** La ligne de flottaison sous la bande d'accueil : 6 px de jaune. */
-const FLOTTAISON = 6;
+/**
+ * La police système, comme `--sans` : San Francisco sur le Mac qui dessine
+ * l'image, Helvetica Neue en repli. Le rendu dépend donc des polices de la
+ * machine, ce qui exclut `--verifier` de la CI (voir en bas).
+ */
+const SANS = "'SF Pro Display', 'SF Pro', 'System Font', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+/** `--rayon` et `--rayon-etiquette`, en pixels, à l'échelle de l'image. */
+const RAYON = 14;
+const RAYON_ETIQUETTE = 6;
 
 /**
  * La question montrée en vitrine, comme l'accueil montre la sienne. Une
@@ -80,6 +70,9 @@ const VITRINE = {
   enonce: 'Jusqu’où l’option « côtière » permet-elle de naviguer ?',
   lettre: 'b',
   texte: 'Jusqu’à 6 milles d’un abri',
+  // Les autres propositions, dans l'ordre du fichier : la carte les montre
+  // toutes, comme le quiz.
+  autres: { a: 'Jusqu’à 2 milles d’un abri', c: 'Jusqu’à 12 milles d’un abri' },
 };
 
 /**
@@ -103,7 +96,12 @@ function verifierVitrine() {
   };
   if (!/^statut:\s*publie\s*$/m.test(brut)) dire('n’est plus publiée');
   if (!memeTexte(brut, VITRINE.enonce)) dire('n’a plus cet énoncé');
-  if (!memeTexte(brut, `texte: ${VITRINE.texte}`)) dire('n’a plus cette proposition');
+  for (const texte of [VITRINE.texte, ...Object.values(VITRINE.autres)]) {
+    if (!memeTexte(brut, `texte: ${texte}`)) dire(`n’a plus la proposition « ${texte} »`);
+  }
+  const lettresFichier = [...brut.matchAll(/^ {2}- id: (\w+)$/gm)].map((m) => m[1]).join('');
+  const lettresVitrine = [VITRINE.lettre, ...Object.keys(VITRINE.autres)].sort().join('');
+  if (lettresFichier !== lettresVitrine) dire(`a les propositions « ${lettresFichier} »`);
   // Une seule bonne réponse, et c'est bien la lettre montrée : le contraire
   // ferait cocher une mauvaise case en vitrine.
   const reponses = (brut.match(/^reponses:\n((?:\s+- \w+\n)+)/m) ?? [])[1] ?? '';
@@ -113,151 +111,97 @@ function verifierVitrine() {
   }
 }
 
-/**
- * Compte les questions publiées. On lit le statut à la ligne plutôt que de
- * parser le YAML : un `statut:` en début de ligne ne peut être que celui du
- * document, les champs imbriqués étant tous indentés.
- */
-function questionsPubliees() {
-  let total = 0;
-  for (const theme of readdirSync(QUESTIONS, { withFileTypes: true })) {
-    // `_inbox` est un brouillon hors git : il n'est pas publié.
-    if (!theme.isDirectory() || theme.name.startsWith('_')) continue;
-    for (const fichier of readdirSync(join(QUESTIONS, theme.name))) {
-      if (!fichier.endsWith('.yaml')) continue;
-      const texte = readFileSync(join(QUESTIONS, theme.name, fichier), 'utf-8');
-      if (/^statut:\s*publie\s*$/m.test(texte)) total += 1;
-    }
-  }
-  return total;
-}
-
-/** Les leçons écrites : un fichier par notion, comme le veut `lecons.ts`. */
-function leconsEcrites() {
-  return readdirSync(COURS).filter((f) => f.endsWith('.yaml')).length;
-}
-
 function versionBanque() {
   return readFileSync(join(RACINE, 'data', 'VERSION'), 'utf-8').trim();
 }
 
 /**
- * Le display : Archivo étendue et très grasse sur le site, ici Helvetica
- * grasse élargie à la main. L'échelle porte sur le texte seul, jamais sur la
- * géométrie autour, qui garderait sinon des épaisseurs fausses.
+ * Aucun nombre dans l'image. L'ancienne disait « 658 questions » et l'a dit
+ * longtemps après le retrait d'une question, faute de garde en CI : une image
+ * de partage reste en cache chez les réseaux des semaines durant, elle ne
+ * doit rien affirmer qui bouge avec la banque.
  */
-function display(x, y, taille, contenu, remplissage) {
-  return `<text transform="translate(${x} ${y}) scale(${LARGE} 1)" x="0" y="0"
-        font-family="${SANS}" font-size="${taille}" font-weight="700"
-        letter-spacing="${(-0.01 * taille).toFixed(2)}" fill="${remplissage}">${contenu}</text>`;
-}
-
-/** Le corps : largeur normale, comme sur le site. */
-function corps(x, y, taille, contenu, remplissage, graisse = 400) {
+function texte(x, y, taille, contenu, remplissage, graisse = 400, espacement = 0) {
   return `<text x="${x}" y="${y}" font-family="${SANS}" font-size="${taille}"
-        font-weight="${graisse}" fill="${remplissage}">${contenu}</text>`;
+        font-weight="${graisse}" letter-spacing="${espacement}" fill="${remplissage}">${contenu}</text>`;
 }
 
-/**
- * Le glyphe de la marque, repris de `Base.astro` : le cône d'une cardinale
- * sur sa tourelle. Sur la bande marine il s'inverse, exactement comme le
- * fait le site en apparence sombre.
- */
+/** Le glyphe de la marque, repris de `favicon.svg` : le voyant d'une cardinale. */
 function marque(x, y, cote) {
   return `<g transform="translate(${x} ${y}) scale(${cote / 32})">
-    <rect width="32" height="32" rx="8" fill="${JAUNE}"/>
-    <path d="M16 6.5 L25.5 21.5 H6.5 Z" fill="${MARINE}"/>
-    <rect x="10.5" y="23.5" width="11" height="3" rx="1.5" fill="${MARINE}"/>
+    <rect width="32" height="32" rx="7.25" fill="${ACTION}"/>
+    <path d="M16 6.55 L21.82 14.55 H10.18 Z" fill="${JAUNE}"/>
+    <path d="M16 26.18 L21.82 18.18 H10.18 Z" fill="${JAUNE}"/>
   </g>`;
 }
 
 /**
- * Une proposition du quiz, dans l'état coché : carte jaune pâle, bordure
- * marine, la lettre dans un cercle plein. C'est aussi le seul endroit où la
- * charte autorise une profondeur, le bord plein de 3 px sous la carte, qui
- * n'est pas une ombre portée mais la même forme posée trois pixels plus bas.
- *
- * Deux écarts assumés, parce que la carte est ici posée sur la bande marine,
- * là où le site ne la pose jamais que sur la brume claire de la page.
- *
- * Le bord plein prend le jaune sombre, celui du bouton principal, au lieu du
- * marine de l'état coché : marine sur marine, la seule profondeur de la charte
- * ne se verrait pas, et un bord plein qu'on ne voit pas n'en est plus un. La
- * bordure marine, elle, reste écrite telle quelle et se fond dans le fond ;
- * c'est la forme jaune pâle qui découpe la carte.
- *
- * Le vert du verdict se verrait aussi, mais il ferait de l'image une image
- * verte : on garde les deux couleurs qu'on reconnaît de loin.
+ * Une proposition du quiz, telle que `quiz.css` la dessine : filet fin, lettre
+ * dans une étiquette. La bonne est montrée corrigée, en vert, comme après
+ * « Valider » : l'image donne la réponse au lieu de cocher une case muette.
  */
-function proposition(x, y, l, h, lettre, texte) {
-  const r = 17; // le cercle de la lettre, 1,85 rem sur une carte de 3,5 rem
-  const cx = x + 20 + r;
-  const cy = y + h / 2;
-  return `<rect x="${x}" y="${y + BORD}" width="${l}" height="${h}" rx="${RAYON}" fill="${JAUNE_SOMBRE}"/>
-  <rect x="${x}" y="${y}" width="${l}" height="${h}" rx="${RAYON}" fill="${JAUNE_PALE}"
-        stroke="${MARINE}" stroke-width="2.5"/>
-  <circle cx="${cx}" cy="${cy}" r="${r}" fill="${MARINE}"/>
-  <text x="${cx}" y="${cy + 6}" text-anchor="middle" font-family="${SANS}" font-size="17"
-        font-weight="700" fill="${BLANC}">${lettre.toUpperCase()}</text>
-  <text x="${cx + r + 16}" y="${cy + 8}" font-family="${SANS}" font-size="22"
-        fill="${MARINE}">${texte}</text>`;
+function proposition(x, y, l, h, lettre, contenu, juste) {
+  const e = 32; // l'étiquette de la lettre
+  const ex = x + 18;
+  const ey = y + (h - e) / 2;
+  return `<rect x="${x}" y="${y}" width="${l}" height="${h}" rx="${RAYON - 4}"
+        fill="${juste ? VERT_PALE : FOND}" stroke="${juste ? VERT : FILET}" stroke-width="${juste ? 2 : 1.5}"/>
+  <rect x="${ex}" y="${ey}" width="${e}" height="${e}" rx="${RAYON_ETIQUETTE}"
+        fill="${juste ? VERT : FOND}" stroke="${juste ? VERT : FILET_FORT}" stroke-width="1.5"/>
+  <text x="${ex + e / 2}" y="${ey + 22}" text-anchor="middle" font-family="${SANS}" font-size="17"
+        font-weight="600" fill="${juste ? SUR_ACTION : TEXTE_DOUX}">${lettre.toUpperCase()}</text>
+  ${texte(ex + e + 16, y + h / 2 + 8, 22, contenu, juste ? VERT_TEXTE : TEXTE, juste ? 600 : 400)}`;
 }
 
-function composer({ questions, themes, lecons }) {
-  const MG = 76; // la marge de la colonne de gauche
-  const COL = 620; // sa largeur : au-delà, le texte touche le panneau
-  // Le panneau blanc, posé à droite comme sur l'accueil : aligné sur le haut
-  // du titre, et fermé à la même ligne que la proposition.
-  const p = { x: 752, y: 150, l: 372, h: 414 };
-  const px = p.x + 30; // sa marge intérieure
+function composer() {
+  const MG = 72; // la marge de la colonne de gauche
+  // La carte de la question, à droite comme sur l'accueil.
+  const c = { x: 664, y: 150, l: 464, h: 400 };
+  const cx = c.x + 28;
+  const propositions = Object.entries({ ...VITRINE.autres, [VITRINE.lettre]: VITRINE.texte })
+    .sort(([a], [b]) => a.localeCompare(b));
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${LARGEUR}" height="${HAUTEUR}" viewBox="0 0 ${LARGEUR} ${HAUTEUR}">
-  <rect width="${LARGEUR}" height="${HAUTEUR}" fill="${MARINE}"/>
+  <rect width="${LARGEUR}" height="${HAUTEUR}" fill="${FOND}"/>
 
-  <!-- L'en-tête du site : le glyphe et le nom. -->
-  ${marque(MG, 56, 46)}
-  ${display(MG + 62, 88, 27, 'Permis côtier', BLANC)}
+  <!-- L'en-tête du site : le glyphe, le nom, le filet. -->
+  ${marque(MG, 40, 40)}
+  ${texte(MG + 54, 69, 26, 'Permis côtier', TEXTE, 700, -0.3)}
+  <line x1="0" y1="112" x2="${LARGEUR}" y2="112" stroke="${FILET}" stroke-width="1.5"/>
 
-  <!-- Le titre de l'accueil, coupé à seize signes comme la page le fait. -->
-  ${display(MG, 194, 62, 'Révise le permis', BLANC)}
-  ${display(MG, 262, 62, 'côtier au format', BLANC)}
-  ${display(MG, 330, 62, 'de l’épreuve.', BLANC)}
+  <!-- Le titre de l'accueil. -->
+  ${texte(MG, 222, 60, 'Le permis côtier,', TEXTE, 700, -1.5)}
+  ${texte(MG, 292, 60, 'trois minutes', TEXTE, 700, -1.5)}
+  ${texte(MG, 362, 60, 'à la fois.', TEXTE, 700, -1.5)}
 
-  <!-- La promesse, dans le bleu pâle que la bande réserve au secondaire. -->
-  ${corps(MG, 392, 23, 'Le cours, l’entraînement par thème, et l’examen blanc', BANDE_DOUX)}
-  ${corps(MG, 426, 23, 'chronométré, comme le jour J. Gratuit, sans compte.', BANDE_DOUX)}
+  <!-- La promesse, en texte doux. -->
+  ${texte(MG, 430, 25, 'Des leçons courtes écrites depuis les textes,', TEXTE_DOUX)}
+  ${texte(MG, 464, 25, 'des questions qui citent leur article,', TEXTE_DOUX)}
+  ${texte(MG, 498, 25, 'l’examen blanc au format du jour J.', TEXTE_DOUX)}
+  ${texte(MG, 550, 25, 'Gratuit, sans compte, sans publicité.', TEXTE, 600)}
 
-  <!-- Une vraie question de la banque, et une de ses propositions cochée. -->
-  ${corps(MG, 478, 21, VITRINE.enonce, BLANC)}
-  ${proposition(MG, 499, COL, 62, VITRINE.lettre, VITRINE.texte)}
+  <!-- Une vraie question de la banque, corrigée. -->
+  <rect x="${c.x}" y="${c.y}" width="${c.l}" height="${c.h}" rx="${RAYON}" fill="${FOND}"
+        stroke="${FILET}" stroke-width="1.5"/>
+  ${texte(cx, c.y + 56, 25, 'Jusqu’où l’option « côtière »', TEXTE, 700, -0.3)}
+  ${texte(cx, c.y + 88, 25, 'permet-elle de naviguer ?', TEXTE, 700, -0.3)}
+  ${propositions
+    .map(([lettre, contenu], i) =>
+      proposition(cx, c.y + 124 + i * 82, c.l - 56, 66, lettre, contenu, lettre === VITRINE.lettre),
+    )
+    .join('\n  ')}
 
-  <!-- Le panneau blanc, ses deux grands nombres et la traçabilité. -->
-  <rect x="${p.x}" y="${p.y}" width="${p.l}" height="${p.h}" rx="${RAYON}" fill="${BLANC}"/>
-  ${display(px, p.y + 82, 58, questions, MARINE)}
-  ${corps(px, p.y + 116, 17, 'questions publiées, sur les', MARINE, 600)}
-  ${corps(px, p.y + 138, 17, `${themes} thèmes du programme`, MARINE, 600)}
-  ${display(px, p.y + 222, 58, lecons, MARINE)}
-  ${corps(px, p.y + 256, 17, 'leçons écrites depuis les textes,', MARINE, 600)}
-  ${corps(px, p.y + 278, 17, 'pas depuis un manuel', MARINE, 600)}
-  <line x1="${px}" y1="${p.y + 312}" x2="${p.x + p.l - 30}" y2="${p.y + 312}" stroke="${FILET}" stroke-width="2"/>
-  ${corps(px, p.y + 348, 16, 'Sous chaque réponse, l’article', TEXTE_DOUX)}
-  ${corps(px, p.y + 370, 16, 'dont elle sort et son numéro.', TEXTE_DOUX)}
-
-  <!-- La ligne de flottaison, qui ferme la bande. -->
-  <rect x="0" y="${HAUTEUR - FLOTTAISON}" width="${LARGEUR}" height="${FLOTTAISON}" fill="${JAUNE}"/>
+  <!-- Le jaune franc, une seule fois, comme sur le bouton principal de l'app. -->
+  <rect x="0" y="${HAUTEUR - 8}" width="${LARGEUR}" height="8" fill="${JAUNE}"/>
 </svg>`;
 }
 
 verifierVitrine();
-const questions = questionsPubliees();
-const lecons = leconsEcrites();
-// Les quatorze thèmes de l'arrêté : la table vit dans src/lib/themes.ts, qui
-// est du TypeScript ; on y compte les entrées plutôt que d'écrire le nombre.
-const themes = (
-  readFileSync(join(RACINE, 'src', 'lib', 'themes.ts'), 'utf-8').match(/^ {4}code: '/gm) ?? []
-).length;
-
-const svg = composer({ questions, themes, lecons });
+if (process.argv.includes('--vitrine')) {
+  console.log(`partage : la vitrine ${VITRINE.id} tient.`);
+  process.exit(0);
+}
+const svg = composer();
 // Rendu au double, puis réduit : le texte y gagne, la rastérisation ne
 // disposant d'aucun hinting. `density` 144 vaut deux fois les 72 ppp que
 // librsvg prend par défaut pour un pixel d'SVG.
@@ -277,6 +221,6 @@ if (process.argv.includes('--verifier')) {
   writeFileSync(FICHIER, png);
   console.log(
     `partage : ${FICHIER.replace(RACINE + '/', '')} — ${LARGEUR}×${HAUTEUR}, ` +
-      `${questions} questions, ${lecons} leçons, ${themes} thèmes, banque ${versionBanque()}.`,
+      `vitrine ${VITRINE.id} vérifiée, banque ${versionBanque()}.`,
   );
 }
