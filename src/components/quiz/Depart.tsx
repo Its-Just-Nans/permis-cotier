@@ -74,9 +74,8 @@ export default function Depart({ mode, taille, depart, premiereLecon, reprise, c
           deux boutons, avec un examen à reprendre. */}
       {!reprise && (
         <p className="discret depart__court">
-          Pas le temps de quarante questions ?{' '}
-          <a href="/entrainement/melange" data-mesure="depart-court">Dix questions mêlées</a>,
-          corrigées au fur et à mesure.
+          Pour te situer vite :{' '}
+          <a href="/entrainement/melange" data-mesure="depart-court">dix questions mêlées</a>, sans chrono.
         </p>
       )}
 

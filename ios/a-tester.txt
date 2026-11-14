@@ -1,7 +1,7 @@
 Examen blanc : une voie courte sur l’écran de départ.
 
 Écran de départ de l’examen
-• Ouvre l’onglet Examen. Sous la liste des règles, une ligne dit « Pas le temps de quarante questions ? Dix questions mêlées, corrigées au fur et à mesure. » Le bouton jaune « Commencer l’examen » reste le seul bouton de l’écran.
+• Ouvre l’onglet Examen. Sous la liste des règles, une ligne dit « Pour te situer vite : dix questions mêlées, sans chrono. » Le bouton jaune « Commencer l’examen » reste le seul bouton de l’écran.
 • Touche « Dix questions mêlées » : une série de dix questions de thèmes différents s’ouvre, sans chrono, avec la correction après chaque réponse. À la fin, « Encore 10 » en tire dix autres.
 • Quitte la série en route, puis reviens sur l’onglet Examen : l’examen n’a pas bougé.
 • Quitte un examen en cours, reviens sur l’écran de départ : la ligne n’y est pas, seuls « Reprendre » et « Commencer un nouvel examen » restent.

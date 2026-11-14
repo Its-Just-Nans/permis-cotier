@@ -13,7 +13,7 @@ Décidées le 10 octobre 2026 (plan « app solide », décision 5), posées au l
 {
   "lignesParFichier": 600,
   "pourAppDansLesComposants": 40,
-  "examen": { "reference": 88169, "marge": 1024 }
+  "examen": { "reference": 89246, "marge": 1024 }
 }
 ```
 
@@ -61,3 +61,6 @@ grille des quarante cases), l'étiquette de groupe au-dessus de chaque question
 signes ✓ et ✕ du site. Le retrait d'Archivo, lui, ne compte pas ici : la
 police est hors de ce budget, et c'est 52 Ko de moins sur chaque première
 visite. La marge repart entière.
+
+**Relevé le 14 novembre 2026** (88169 → 89246) : La voie courte de l'écran de départ (lien « dix questions mêlées »,
+prop `melange`, titre et nom de mesure `courte`) en prend le reste. La marge repart entière.
