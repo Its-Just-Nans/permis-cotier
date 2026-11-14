@@ -15,9 +15,20 @@ import type { QuestionAffichable } from '../lib/banque';
 
 interface Props {
   question: QuestionAffichable;
+  /**
+   * Rang de la question quand la page en porte plusieurs (`/test-permis-cotier`) :
+   * il suffixe l'identifiant de l'énoncé, qui doit rester unique, et
+   * numérote la question. Sans rang, rien ne change.
+   */
+  rang?: number;
+  /** Sur une page qui parle déjà d'examen blanc, les liens sous la correction sont de trop. */
+  sansSuite?: boolean;
+  /** La consigne « une ou deux bonnes réponses » : une fois par page suffit. */
+  consigne?: boolean;
 }
 
-const { question: q } = Astro.props;
+const { question: q, rang, sansSuite = false, consigne: avecConsigne = true } = Astro.props;
+const idEnonce = rang ? `essai-enonce-${rang}` : 'essai-enonce';
 const lettre = (id: string) => id.toUpperCase();
 const bonnes = q.reponses.map(lettre);
 const bonnesEnMots =
@@ -38,12 +49,14 @@ const consigne =
         fetchpriority="low"
       />
     )}
-    <p class="essai__enonce" id="essai-enonce">{q.enonce}</p>
+    <p class="essai__enonce" id={idEnonce}>
+      {rang && <span class="essai__rang">Question {rang}. </span>}{q.enonce}
+    </p>
   </div>
 
-  <p class="essai__consigne">{consigne}</p>
+  {avecConsigne && <p class="essai__consigne">{consigne}</p>}
 
-  <ul class="essai__propositions" aria-labelledby="essai-enonce">
+  <ul class="essai__propositions" aria-labelledby={idEnonce}>
     {q.propositions.map((p) => (
       <li>
         <button type="button" class="essai__proposition" aria-pressed="false" data-id={p.id}>
@@ -71,10 +84,12 @@ const consigne =
         <span class="essai__etiquette">Source</span>
         {q.sources.map((s) => s.texte).join(' ; ')}
       </p>
-      <p class="essai__suite">
-        <a class="bouton" href="/examen" data-mesure="accueil-essai-examen">Passer un examen blanc</a>
-        <a href={`/entrainement/${q.theme}`} data-mesure="accueil-essai-theme">Ou continuer sur ce thème</a>
-      </p>
+      {!sansSuite && (
+        <p class="essai__suite">
+          <a class="bouton" href="/examen" data-mesure="accueil-essai-examen">Passer un examen blanc</a>
+          <a href={`/entrainement/${q.theme}`} data-mesure="accueil-essai-theme">Ou continuer sur ce thème</a>
+        </p>
+      )}
     </div>
   </details>
 </div>
@@ -158,6 +173,7 @@ const consigne =
     background: var(--fond-2);
   }
   .essai__enonce { margin: 0; font-weight: 700; font-size: 1.0625rem; line-height: 1.35; }
+  .essai__rang { color: var(--texte-doux); font-weight: 600; }
   .essai__consigne {
     margin: 1rem 0 0.75rem;
     padding: 0.55rem 0.75rem;
@@ -169,6 +185,7 @@ const consigne =
     max-width: none;
   }
 
+  .essai__tete + .essai__propositions { margin-top: 0.9rem; }
   .essai__propositions { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
   .essai__propositions li { max-width: none; }
   .essai__proposition {

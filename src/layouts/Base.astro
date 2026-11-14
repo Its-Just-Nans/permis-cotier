@@ -12,6 +12,7 @@ import { SCRIPT_DEFILEMENT_NAVIGATION } from '../lib/navigation';
 import { comptesDeRelecture, versionBanque, cheminBanque } from '../lib/banque';
 import { POUR_APP } from '../lib/cible';
 import { lienRetour, pageCourante } from '../lib/page';
+import { cheminIndexable } from '../lib/indexation';
 import {
   SITE,
   APP_STORE,
@@ -55,7 +56,7 @@ interface Props {
 const {
   titre,
   description,
-  indexable = true,
+  indexable: indexableDemande = true,
   canonique,
   miettes = [],
   retourApp,
@@ -67,6 +68,11 @@ const {
 
 const base = Astro.site ?? new URL(SITE.domaine);
 const url = canonique ?? new URL(cheminServi(Astro.url.pathname), base).href;
+// Sur le site, seules les pages de la liste blanche sont indexables, quoi que
+// demande la page (`src/lib/indexation.ts`). Dans l'app, rien ne change.
+const indexable = POUR_APP
+  ? indexableDemande
+  : indexableDemande && cheminIndexable(cheminServi(Astro.url.pathname));
 const titreComplet = titrePage(titre);
 const descriptionCourte = descriptionPage(description);
 const imageAbsolue = new URL(image, base).href;

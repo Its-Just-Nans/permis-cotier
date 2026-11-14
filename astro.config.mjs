@@ -9,7 +9,8 @@ import {
   IGNORER_PARAMETRES,
   reglesALaDemande,
 } from './src/lib/hors-ligne.ts';
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { cheminIndexable } from './src/lib/indexation.ts';
+import { readFileSync } from 'node:fs';
 import { construireScriptBande } from './scripts/bande-avant-rendu.mjs';
 import { typographieDesSources, typographieDuHtml } from './scripts/typographie.mjs';
 
@@ -26,11 +27,6 @@ const site = process.env.SITE_URL ?? 'https://lepermiscotier.fr';
 // Google. Le détail des différences est commenté dans `src/lib/cible.ts`.
 const pourApp = process.env.CIBLE === 'app';
 
-// Une leçon du cours n'entre au sitemap que si elle est écrite : une leçon
-// courte n'est que le résumé de sa fiche de notion, la page la déclare en
-// `noindex`, et un sitemap qui l'annoncerait dirait le contraire. Une leçon
-// est à `/cours/<thème>/<notion>` ; la page d'un cours, `/cours/<thème>`,
-// entre toujours.
 /**
  * Ce que le site ne doit pas payer pour l'app.
  *
@@ -114,19 +110,6 @@ function bandeAvantRendu() {
   };
 }
 
-const leconIndexable = (page) => {
-  const code = /\/cours\/[a-z0-9-]+\/([a-z0-9-]+)(?:\.html)?$/.exec(new URL(page).pathname)?.[1];
-  // `/cours/<thème>/memo` est la fiche-mémo du cours, pas une leçon.
-  return !code || code === 'memo' || existsSync(new URL(`./data/cours/${code}.yaml`, import.meta.url));
-};
-
-// Les PDF des fiches de révision : des fichiers de `public/`, que le sitemap
-// ne voit pas tout seul. Un PDF par fiche de `data/revision/`, et
-// `fiches-pdf.mjs --verifier` garantit qu'il existe.
-const pdfsDesFiches = readdirSync(new URL('./data/revision/', import.meta.url))
-  .filter((f) => f.endsWith('.yaml'))
-  .map((f) => new URL(`/fiches-revision/${f.replace(/\.yaml$/, '')}.pdf`, site).href);
-
 export default defineConfig({
   site,
   outDir: pourApp ? './dist-app' : './dist',
@@ -152,35 +135,17 @@ export default defineConfig({
     // premier n'a pas de lecteur et le second doublerait un cache local.
     ...(pourApp ? [] : [
     sitemap({
-      customPages: pdfsDesFiches,
-      // Les écrans de jeu ne sont pas du contenu : ils tirent des questions et
-      // n'ont rien d'indexable. Ils sont écartés ici comme dans robots.txt.
-      // La fiche du candidat et ses erreurs non plus : elles sont vides tant
-      // que le navigateur n'a pas lu sa progression, et déclarées `noindex` —
-      // les annoncer au sitemap dirait le contraire.
-      filter: (page) =>
-        !/\/(examen|revoir|parametres|signaler|avis|recherche)(\.html)?$/.test(page) &&
-        !page.includes('/profil') &&
-        !page.includes('/entrainement/') &&
-        leconIndexable(page),
+      // Le sitemap n'annonce que la liste blanche de `src/lib/indexation.ts` :
+      // tout le reste est en `noindex`, et un sitemap qui l'annoncerait dirait
+      // le contraire. Les PDF des fiches n'y sont pas non plus.
+      filter: (page) => cheminIndexable(new URL(page).pathname.replace(/\.html$/, '') || '/'),
       changefreq: 'weekly',
       lastmod: new Date(),
       serialize(item) {
         const chemin = new URL(item.url).pathname.replace(/\.html$/, '');
-        // Ce que Google doit explorer en premier : l'accueil, puis les pages
-        // qui répondent à une question, puis le programme, puis la banque.
         if (chemin === '/' || chemin === '') item.priority = 1.0;
         else if (chemin === '/cours' || chemin.startsWith('/guide')) item.priority = 0.9;
-        else if (/^\/cours\/[a-z0-9-]+$/.test(chemin)) item.priority = 0.8;
-        else if (chemin.startsWith('/cours/')) item.priority = 0.7;
-        else if (chemin === '/themes' || chemin.startsWith('/theme/')) item.priority = 0.8;
-        // Les fiches écrites pour ce site : du contenu original, sur des
-        // sujets où les concurrents recopient sans jamais citer.
-        else if (chemin === '/source' || chemin.startsWith('/source/')) item.priority = 0.7;
-        else if (chemin.startsWith('/notion/')) item.priority = 0.7;
-        else if (chemin.startsWith('/fiches-revision')) item.priority = 0.8;
-        else if (chemin.startsWith('/question/')) item.priority = 0.4;
-        else item.priority = 0.3;
+        else item.priority = 0.8;
         return item;
       },
     }),
