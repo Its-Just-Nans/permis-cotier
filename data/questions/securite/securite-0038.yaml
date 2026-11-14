@@ -5,8 +5,8 @@ notion: securite-armement-cotier
 statut: publie
 difficulte: 1
 enonce: >-
-  À quatre milles d'un abri, quel niveau de performance doit présenter l'équipement individuel
-  de flottabilité de chaque personne embarquée ?
+  À quatre milles d'un abri, en règle générale, quel niveau de performance doivent avoir les
+  équipements individuels de flottabilité embarqués pour chaque personne à bord ?
 propositions:
   - id: a
     texte: Au moins 100
@@ -33,4 +33,4 @@ meta:
   cree_le: '2026-09-05'
   genere_par: claude
   relu_par: claude
-  relu_le: '2026-11-11'
+  relu_le: '2026-11-14'
