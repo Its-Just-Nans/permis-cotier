@@ -54,8 +54,10 @@ sections:
       - tableau:
           colonnes: [Symbole, Sens]
           lignes:
-            - [Croix ou astérisque, "Roche qui découvre, avec sa hauteur soulignée"]
-            - [Pointillé de danger, "Roche à fleur d’eau ou dangereuse"]
+            - [Astérisque, "Roche qui couvre et découvre, avec sa hauteur soulignée"]
+            - [Croix entourée de quatre points, "Roche à fleur d’eau"]
+            - [Croix seule, "Roche toujours submergée, de profondeur inconnue"]
+            - [Pointillé de danger, "Entoure un danger pour la navigation"]
             - [Fuseau, "Épave, barrée si elle est dangereuse"]
             - [Ancre, Mouillage]
             - [Tireté magenta, "Zone interdite ou réglementée, avec sa mention"]
