@@ -20,16 +20,15 @@ reponses:
   - a
   - b
 explication: >-
-  Avant d'appareiller, le chef de bord s'assure que sa navigation convient à son navire, et
-  que les équipements de sécurité sont à bord, en bon état, valides, adaptés aux personnes
-  embarquées et prêts à servir si besoin. Un seul permis suffit à bord, celui de la personne
-  qui conduit : rien n'oblige les passagers à en avoir un. Et aucune déclaration de sortie
-  n'est exigée du plaisancier.
+  Avant d'appareiller, le chef de bord s'assure que sa navigation convient à son navire,
+  et que les équipements de sécurité sont à bord, en bon état, valides, adaptés aux
+  personnes embarquées et prêts à servir si besoin. Le permis des passagers et une
+  déclaration de sortie ne font pas partie de ce que le texte lui demande.
 sources:
   - texte: Division 240, article 240-1.03
     ref: division-240
 meta:
   cree_le: '2026-09-04'
   genere_par: claude
-  relu_par: alexis
+  relu_par: claude
   relu_le: '2026-11-14'

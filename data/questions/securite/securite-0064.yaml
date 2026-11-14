@@ -20,13 +20,13 @@ reponses:
 explication: >-
   Dans les chenaux réservés aux navires et engins motorisés, la vitesse reste limitée à 5
   nœuds, sauf disposition particulière. Le chenal traversier sert à traverser la bande des
-  300 mètres, pas à y aller vite. C'est le chenal de vitesse, et lui seul, qui échappe à la
-  limite.
+  300 mètres, pas à y aller vite. Seuls le chenal de vitesse et les chenaux soumis à une
+  réglementation particulière échappent à cette limite.
 sources:
   - texte: Arrêté du préfet maritime de la Méditerranée n° 125/2013, article 10.5.1
     ref: bande-300-metres
 meta:
   cree_le: '2026-10-03'
   genere_par: claude
-  relu_par: alexis
+  relu_par: claude
   relu_le: '2026-11-14'
