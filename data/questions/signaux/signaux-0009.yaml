@@ -16,16 +16,16 @@ propositions:
 reponses:
   - a
 explication: >-
-  La règle 36 précise que l'emploi de feux intermittents ou tournants à haute intensité,
-  tels que les phares gyroscopiques, doit être évité, parce qu'un tel feu risque d'être
-  pris pour une aide à la navigation. Les signaux sonores non confondables et le projecteur
-  dirigé vers le danger sont au contraire les moyens que la règle autorise. Le piège est
-  de confondre ce qui est proscrit avec ce qui est permis dans la même règle.
+  L'emploi de feux intermittents ou tournants à haute intensité, comme les phares
+  gyroscopiques, doit être évité. Les signaux sonores qu'on ne peut confondre avec un
+  autre signal, et le projecteur dirigé vers le danger, sont au contraire les moyens que
+  le texte autorise. Le piège : confondre ce qui est proscrit avec ce qui est permis dans
+  la même règle.
 sources:
   - texte: RIPAM, règle 36
     ref: decret-77-733
 meta:
   cree_le: '2026-09-04'
   genere_par: claude
-  relu_par: alexis
+  relu_par: claude
   relu_le: '2026-11-14'
