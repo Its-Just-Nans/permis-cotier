@@ -340,6 +340,24 @@ describe('l’écran de leçon', () => {
     expect(screen.getByRole('link', { name: 'Cours suivant : Se croiser sans se toucher' }).getAttribute('href')).toBe('/cours/barre-route');
   });
 
+  it('à la fin d’un cours, l’entraînement du thème vient après le cours suivant', () => {
+    monter(courte, { type: 'cours', chemin: '/cours/barre-route', titre: 'Se croiser sans se toucher' });
+    cliquer('Terminer la leçon');
+    const fin = document.querySelector<HTMLElement>('.ecran--fin')!;
+    const theme = [...fin.querySelectorAll('a')].find((a) => a.textContent === 'S’entraîner sur le thème')!;
+    expect(theme.getAttribute('href')).toBe('/entrainement/balisage');
+    expect(theme.getAttribute('data-mesure')).toBe('lecon-entrainement-theme');
+    expect(theme.className).toBe('bouton');
+    const liens = [...fin.querySelectorAll('a')].map((a) => a.textContent);
+    expect(liens.indexOf('Cours suivant : Se croiser sans se toucher')).toBeLessThan(liens.indexOf('S’entraîner sur le thème'));
+  });
+
+  it('au milieu d’un cours, pas d’entraînement du thème : celui de la notion suffit', () => {
+    monter(courte);
+    cliquer('Terminer la leçon');
+    expect(screen.queryByRole('link', { name: 'S’entraîner sur le thème' })).toBeNull();
+  });
+
   it('bascule en lecture continue et revient au pas à pas', () => {
     monter(ecrite);
     const racine = document.querySelector('.lecon')!;
