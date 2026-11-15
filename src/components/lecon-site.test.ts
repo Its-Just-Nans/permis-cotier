@@ -352,6 +352,12 @@ describe('l’écran de leçon', () => {
     expect(liens.indexOf('Cours suivant : Se croiser sans se toucher')).toBeLessThan(liens.indexOf('S’entraîner sur le thème'));
   });
 
+  it('à la fin d’un cours, l’entraînement du thème remplace celui de la notion', () => {
+    monter(courte, { type: 'cours', chemin: '/cours/barre-route', titre: 'Se croiser sans se toucher' });
+    cliquer('Terminer la leçon');
+    expect(screen.queryByRole('link', { name: 'S’entraîner sur cette notion' })).toBeNull();
+  });
+
   it('au milieu d’un cours, pas d’entraînement du thème : celui de la notion suffit', () => {
     monter(courte);
     cliquer('Terminer la leçon');

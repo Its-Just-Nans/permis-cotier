@@ -489,7 +489,9 @@ export function monterLecon(doc: Document = document): void {
           }, 'S’entraîner sur le thème'),
           // Les questions de cette notion, pas les soixante et une du thème :
           // ce qu'on vient d'apprendre se vérifie sur ce qu'on vient d'apprendre.
-          el('a', {
+          // À la fin d'un cours, l'entraînement du thème la remplace : quatre
+          // boutons secondaires sous le principal, c'était trop.
+          suite?.type === 'lecon' && el('a', {
             class: 'bouton',
             href: `/entrainement/notion/${code}`,
             'data-mesure': 'lecon-entrainement',

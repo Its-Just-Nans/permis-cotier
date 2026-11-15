@@ -11,7 +11,7 @@ Fin d’un cours : l’entraînement du thème est proposé.
 
 Leçons
 • Ouvre la dernière leçon d’un cours (par exemple « Pictogrammes », dixième leçon de « Lire le balisage »), va jusqu’au bout et finis la vérification.
-• L’écran de fin dit « C’était la dernière leçon de … ». Le bouton jaune est « Cours suivant : … ». Dessous, « À relire la veille », puis « S’entraîner sur le thème » (les questions du thème entier), puis « S’entraîner sur cette notion ».
+• L’écran de fin dit « C’était la dernière leçon de … ». Le bouton jaune est « Cours suivant : … ». Dessous, « À relire la veille », puis « S’entraîner sur le thème » (les questions du thème entier). Pas de « S’entraîner sur cette notion » à cet endroit.
 • Touche « S’entraîner sur le thème » : l’entraînement du thème s’ouvre.
-• Une leçon qui n’est pas la dernière d’un cours ne propose pas « S’entraîner sur le thème ».
+• Une leçon qui n’est pas la dernière d’un cours ne propose pas « S’entraîner sur le thème », mais « S’entraîner sur cette notion ».
 • Vérifie en taille de texte maximale (Dynamic Type) que le bouton collant du bas ne cache pas les autres.
