@@ -22,6 +22,14 @@ html[data-app] {
   --courbe: cubic-bezier(0.2, 0, 0, 1);
 }
 
+/* Pas de défilement doux dans l'app. `global.css` le pose pour les ancres du
+   site ; ici, le routeur remet chaque page à sa hauteur par `scrollTo` sans
+   option, que suit `scroll-behavior` : au retour arrière, la page arrivait en
+   haut puis glissait jusqu'à sa place. */
+html[data-app] {
+  scroll-behavior: auto;
+}
+
 /* ------------------------------------------------------------ La page calme
 
    L'app prend les jetons du site tels quels (`global.css`) : une page blanche

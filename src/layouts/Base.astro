@@ -103,11 +103,11 @@ const courant = (...sections: string[]) => pageCourante(chemin, ...sections);
 // monte en fondu en 140 ms. Le glissement d'avant durait plus d'une demi-seconde
 // sous Safari 16 et 17 (pas de View Transitions natives : Astro joue l'ancien
 // écran, puis le nouveau, l'un après l'autre) et faisait attendre chaque tap.
-// Seule l'opacité bouge ; `prefers-reduced-motion` coupe tout, par la feuille
-// d'Astro.
+// Seule l'opacité bouge (`app-ecran-monte`, dans `Coquille.astro`) ;
+// `prefers-reduced-motion` coupe tout, par la feuille d'Astro.
 const fondu: TransitionAnimationPair = {
   old: [],
-  new: { name: 'astroFadeIn', duration: 140, easing: 'ease-out', fillMode: 'both' },
+  new: { name: 'app-ecran-monte', duration: 140, easing: 'ease-out', fillMode: 'both' },
 };
 
 // « Une remarque sur cette page ? » : le pied de chaque page du site renvoie à

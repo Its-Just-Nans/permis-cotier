@@ -170,6 +170,11 @@ class EcranWeb: CAPBridgeViewController {
                 self?.hauteurRendue = nil
             }
         }
-        webView.go(to: racine)
+        // La page apprend d'abord que c'est un retour au départ : elle affiche
+        // la racine en haut, d'un coup, au lieu de la rendre à sa hauteur
+        // gardée pour qu'on la fasse glisser ensuite (`lib/retour-arriere.ts`).
+        webView.evaluateJavaScript("window.dispatchEvent(new Event('app:depart'))") { _, _ in
+            _ = webView.go(to: racine)
+        }
     }
 }
