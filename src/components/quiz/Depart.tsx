@@ -68,6 +68,17 @@ export default function Depart({ mode, taille, depart, premiereLecon, reprise, c
         <li>Aucune correction avant la fin. Tout arrive d’un coup, sur l’écran de résultat.</li>
       </ul>
 
+      {/* Une sortie pour qui veut seulement se situer : dix questions mêlées,
+          corrigées une à une, sans chrono. En lien, sous le format : le
+          bouton collant reste le seul bouton. Absente quand il y a déjà
+          deux boutons, avec un examen à reprendre. */}
+      {!reprise && (
+        <p className="discret depart__court">
+          Pour te situer vite :{' '}
+          <a href="/entrainement/melange" data-mesure="depart-court">dix questions mêlées</a>, sans chrono.
+        </p>
+      )}
+
       {/* L'aide clavier n'a rien à faire sur un téléphone, et la note sur
           l'arrêté est un texte de site : l'app ouvre sur l'action. */}
       {!POUR_APP && (

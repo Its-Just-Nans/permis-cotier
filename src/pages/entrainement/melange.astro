@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import SansScript from '../../components/SansScript.astro';
+import Quiz from '../../components/Quiz.tsx';
+import { cheminBanque } from '../../lib/banque';
+
+// La voie courte de l'écran de départ de l'examen : dix questions tirées dans
+// toute la banque, les fragiles et les jamais vues d'abord, corrigées une à
+// une et sans chrono. Même moteur que l'entraînement d'un thème, sans thème.
+const banque = cheminBanque();
+---
+
+<Base
+  titre="Dix questions mêlées"
+  description="Dix questions tirées dans les quatorze thèmes, avec correction immédiate et source."
+  indexable={false}
+  prechargeBanque
+>
+  <div class="page page--etroite">
+    <p class="chapitre web-seulement" style="padding-top:1.5rem"><a href="/entrainement">Entraînement</a> · Dix questions mêlées</p>
+    <SansScript ecran="L’entraînement" />
+    <Quiz client:only="react" mode="entrainement" source={banque} melange />
+  </div>
+</Base>
