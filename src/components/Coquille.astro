@@ -28,13 +28,29 @@ import { ClientRouter } from 'astro:transitions';
   /* Safari 18 et Chrome jouent les View Transitions natives, avec par défaut un
      fondu enchaîné de 250 ms sur la page entière et sur chaque zone nommée. Seul
      le nouvel écran monte (`transition:animate` de `<main>`, `Base.astro`) : on
-     coupe le reste, sinon le fondu court dure quand même un quart de seconde. */
-  ::view-transition-old(*),
+     coupe le reste, sinon le fondu court dure quand même un quart de seconde.
+
+     L'ancien écran s'efface d'un coup. Sans animation, sa capture restait
+     peinte, opaque, sous le nouvel écran pendant tout le fondu : les deux pages
+     se superposaient, textes mêlés, puis l'ancienne disparaissait d'un coup à
+     la fin. */
+  ::view-transition-old(*) {
+    animation: none;
+    opacity: 0;
+  }
   ::view-transition-new(root) {
     animation: none;
   }
   ::view-transition-group(*) {
     animation-duration: 0s;
+  }
+
+  /* Le fondu d'entrée de `<main>`. Celui d'Astro (`astroFadeIn`) part en
+     `mix-blend-mode: plus-lighter`, fait pour un fondu enchaîné : sur le fond
+     clair, le nouvel écran restait blanc la première moitié du fondu, puis
+     apparaissait d'un coup. Ici, l'opacité seule. */
+  @keyframes app-ecran-monte {
+    from { opacity: 0; }
   }
 </style>
 
@@ -43,6 +59,7 @@ import { ClientRouter } from 'astro:transitions';
   import { armerLesRappelsSurLaDate, basculerVersLOnglet, ongletVise, ouvrirDehors } from '../lib/natif';
   import { accorderBarreEtatALaPage } from '../lib/apparence';
   import { annoncerSiLaProgressionAChange } from '../lib/page';
+  import { tenirLeRetourArriere } from '../lib/retour-arriere';
   import { aujourdhui, charger } from '../lib/progression';
   import { poserLaListe } from './entrainement-app';
 
@@ -120,6 +137,10 @@ import { ClientRouter } from 'astro:transitions';
   };
   document.addEventListener('astro:after-swap', marquerLaLecon);
   document.addEventListener('astro:page-load', marquerLaLecon);
+
+  // Glisser depuis le bord, retoucher l'onglet : sans second fondu, à la
+  // bonne hauteur, même sur un écran à îlots.
+  tenirLeRetourArriere();
 
   // Un onglet qui revient à l'écran annonce la progression écrite ailleurs ;
   // les îlots de la racine la relisent (`surProgressionChangee`).

@@ -15,3 +15,16 @@ Leçons
 • Touche « S’entraîner sur le thème » : l’entraînement du thème s’ouvre.
 • Une leçon qui n’est pas la dernière d’un cours ne propose pas « S’entraîner sur le thème », mais « S’entraîner sur cette notion ».
 • Vérifie en taille de texte maximale (Dynamic Type) que le bouton collant du bas ne cache pas les autres.
+
+Changement d’écran : plus de pages superposées ni de saut au retour.
+
+Aller d’un écran à l’autre
+• Onglet Cours, touche un chapitre, puis une leçon. L’ancien écran disparaît d’un coup et le nouveau apparaît en fondu court. À aucun moment on ne doit voir les deux écrans mêlés, textes les uns sur les autres. Avant, l’ancien restait visible sous le nouveau pendant tout le fondu.
+• Fais-le en mode clair et en mode sombre : le nouvel écran apparaît progressivement, sans rester blanc une fraction de seconde puis surgir.
+
+Revenir en arrière
+• Dans un chapitre, descends assez bas dans la liste des leçons, ouvre une leçon, puis reviens en glissant depuis le bord gauche. Tu retrouves la liste exactement où tu l’avais laissée, sans glissade ni décalage, et sans second fondu après le geste.
+• Même chose depuis l’Accueil et depuis Ta fiche : descends, ouvre un lien, reviens en glissant. La page reprend à la même hauteur (avant, elle retombait en haut).
+• Pendant que la page revient, pose le doigt et fais défiler : rien ne doit te reprendre la main.
+• Dans une leçon, retouche l’icône de l’onglet Cours : tu reviens à la liste des cours, déjà en haut, d’un coup. Avant, la liste revenait plus bas puis remontait en glissant.
+• Vérifie aussi sur iPad, en portrait et en paysage.

@@ -1,2 +1,3 @@
 Sur l’écran de départ de l’examen blanc, une série de dix questions mêlées pour te situer vite, sans chrono et corrigée au fur et à mesure.
 À la fin d’un cours, tu peux enchaîner sur l’entraînement du thème entier, en plus du cours suivant.
+Les changements d’écran sont plus nets : l’écran précédent ne transparaît plus sous le nouveau, et le retour arrière te ramène exactement où tu étais.
