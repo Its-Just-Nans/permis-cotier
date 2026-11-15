@@ -49,8 +49,8 @@ export const APP_STORE = {
  * Le don, sur Buy Me a Coffee. Une seule adresse pour tout le dépôt : le site
  * et l'app la lisent ici.
  */
-// Choisie par Alexis le 11 novembre : la page Buy Me a Coffee est à créer sous ce nom.
-export const DON = 'https://buymeacoffee.com/lepermiscotier';
+// La page d'Alexis, donnée le 15 novembre.
+export const DON = 'https://buymeacoffee.com/alexismorain';
 
 /** Le dépôt public : code sous licence MIT, banque sous CC BY-SA 4.0. */
 export const DEPOT = 'https://github.com/alexis-morain/permis-cotier';
