@@ -28,6 +28,3 @@ Revenir en arrière
 • Pendant que la page revient, pose le doigt et fais défiler : rien ne doit te reprendre la main.
 • Dans une leçon, retouche l’icône de l’onglet Cours : tu reviens à la liste des cours, déjà en haut, d’un coup. Avant, la liste revenait plus bas puis remontait en glissant.
 • Vérifie aussi sur iPad, en portrait et en paysage.
-
-Lien de don
-• Onglet Ta fiche, section « Soutenir le projet » : « Faire un don » ouvre la page Buy Me a Coffee d’Alexis (buymeacoffee.com/alexismorain), et non plus une page vide.
