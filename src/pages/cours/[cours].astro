@@ -96,6 +96,10 @@ const description = `${cours.promesse} ${lecons.length} leçons, ${minutes} minu
     <h1>{cours.titre}</h1>
     <p class="chapo web-seulement">{cours.promesse}</p>
 
+    {/* Vide au serveur. Un cours fini y reçoit la suite (cours suivant,
+        entraînement du thème) : la liste, plus bas, est loin du titre. */}
+    {!POUR_APP && suivant && <div data-cours-fin></div>}
+
     {/* Dans l'app, on vient ici pour ouvrir une leçon : la liste passe
         devant les chiffres et les explications du cours. */}
     {POUR_APP && (

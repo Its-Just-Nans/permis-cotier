@@ -230,15 +230,30 @@ function meta(l: LeconDuParcours, suivie: LeconSuivie | undefined, estProchaine:
   );
 }
 
+function lienSuivant(suivant: { chemin: string; titre: string }): HTMLElement {
+  return el('a', {
+    class: 'bouton bouton--principal',
+    href: suivant.chemin,
+    'data-mesure': 'cours-suivant',
+    'data-mesure-cours': suivant.chemin,
+  }, `Cours suivant : ${suivant.titre}`);
+}
+
 /**
  * Les leçons d'un cours, dans l'ordre : les faites cochées, la suivante
  * désignée. Tout fait, le bloc de reprise tend le cours d'après.
  */
 export function monterParcours(racine: HTMLElement, donnees: DonneesParcours, suivies: Suivies): void {
-  const { cours: { lecons }, suivant } = donnees;
+  const { cours, suivant } = donnees;
+  const { lecons } = cours;
   const faites = lecons.filter((l) => suivies[l.code]).length;
   const tout = faites === lecons.length;
   const prochaine = lecons.find((l) => !suivies[l.code]) ?? lecons[0];
+
+  // Le site réserve une place en haut de la page : sur un téléphone, la liste
+  // est à plus d'un écran du titre, et la suite d'un cours fait s'y perdait.
+  const haut = tout && suivant ? racine.ownerDocument.querySelector<HTMLElement>('[data-cours-fin]') : null;
+  racine.ownerDocument.querySelector('[data-cours-fin]')?.replaceChildren();
 
   const enfants: Node[] = [];
   if (prochaine) {
@@ -246,6 +261,20 @@ export function monterParcours(racine: HTMLElement, donnees: DonneesParcours, su
       el('a', { class: classe, href: prochaine.chemin, 'data-mesure': 'cours-reprise', 'data-mesure-notion': prochaine.code },
         `${verbe} : ${prochaine.nom}`);
     const nb = lecons.length;
+    haut?.replaceChildren(
+      el('div', { class: 'parcours__reprise' },
+        el('p', {}, el('b', {}, 'Cours fait'), `, ${nb} leçon${pluriel(nb)} sur ${nb}. Tu peux passer au suivant.`),
+        el('p', { class: 'parcours__boutons' },
+          lienSuivant(suivant!),
+          el('a', {
+            class: 'bouton',
+            href: `/entrainement/${cours.code}`,
+            'data-mesure': 'cours-fait-entrainement',
+            'data-mesure-theme': cours.code,
+          }, 'S’entraîner sur ce thème'),
+        ),
+      ),
+    );
     enfants.push(
       el('div', { class: 'parcours__reprise' },
         faites === 0
@@ -258,15 +287,9 @@ export function monterParcours(racine: HTMLElement, donnees: DonneesParcours, su
               )
             : el('p', {}, el('b', {}, String(faites)), ` leçon${pluriel(faites)} faite${pluriel(faites)} sur ${nb}.`),
         tout && suivant
-          ? el('p', { class: 'parcours__boutons' },
-              el('a', {
-                class: 'bouton bouton--principal',
-                href: suivant.chemin,
-                'data-mesure': 'cours-suivant',
-                'data-mesure-cours': suivant.chemin,
-              }, `Cours suivant : ${suivant.titre}`),
-              reprise('bouton', 'Refaire'),
-            )
+          ? (haut
+              ? reprise('bouton bouton--principal', 'Refaire')
+              : el('p', { class: 'parcours__boutons' }, lienSuivant(suivant), reprise('bouton', 'Refaire')))
           : reprise('bouton bouton--principal', faites === 0 ? 'Commencer' : tout ? 'Refaire' : 'Reprendre'),
       ),
     );

@@ -480,6 +480,13 @@ export function monterLecon(doc: Document = document): void {
             'data-mesure': 'lecon-memo',
             'data-mesure-cours': cours.code,
           }, 'À relire la veille'),
+          // Le cours fini, l'entraînement du thème passe avant celui de la notion.
+          suite?.type !== 'lecon' && el('a', {
+            class: 'bouton',
+            href: `/entrainement/${cours.code}`,
+            'data-mesure': 'lecon-entrainement-theme',
+            'data-mesure-cours': cours.code,
+          }, 'S’entraîner sur le thème'),
           // Les questions de cette notion, pas les soixante et une du thème :
           // ce qu'on vient d'apprendre se vérifie sur ce qu'on vient d'apprendre.
           el('a', {

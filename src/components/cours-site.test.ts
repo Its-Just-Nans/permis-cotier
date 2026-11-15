@@ -39,9 +39,11 @@ function pageListe(donnees: unknown = { cours }) {
 }
 
 /** `/cours/<thème>` telle que la page la rend avant le script : un ou deux conteneurs. */
-function pageCours(donnees: unknown = { cours: balisage }, conteneurs = 1) {
+function pageCours(donnees: unknown = { cours: balisage }, conteneurs = 1, enHaut = false) {
+  const haut = enHaut ? '<div data-cours-fin></div>' : '';
   const conteneur = '<div class="parcours" data-parcours><ol class="etapes"><li>rendu du serveur</li></ol></div>';
   document.body.innerHTML = `
+    ${haut}
     ${conteneur.repeat(conteneurs)}
     <script type="application/json" id="parcours-donnees">${JSON.stringify(donnees)}</script>`;
 }
@@ -195,6 +197,57 @@ describe('les leçons d’un cours', () => {
     expect(refaire.getAttribute('data-mesure')).toBe('cours-reprise');
     expect(document.querySelector('.etape--prochaine')).toBeNull();
     mesuresUniques();
+  });
+
+  describe('en haut de la page, quand le site y a réservé la place', () => {
+    const toutFait = {
+      'balisage-lateral': { faiteLe: '2026-09-05', bonnes: 3, total: 3 },
+      'balisage-cardinal': { faiteLe: '2026-09-05', bonnes: 2, total: 3 },
+      'balisage-pictogrammes': { faiteLe: '2026-09-05', bonnes: 0, total: 0 },
+    };
+
+    it('un cours fait y tend le cours suivant, puis l’entraînement du thème', () => {
+      progression(toutFait);
+      pageCours({ cours: balisage, suivant }, 1, true);
+      monterCours(document);
+      const haut = document.querySelector<HTMLElement>('[data-cours-fin]')!;
+      expect(haut.textContent).toContain('Cours fait, 3 leçons sur 3. Tu peux passer au suivant.');
+      const versSuivant = lien('Cours suivant : Se croiser sans se toucher', haut);
+      expect(versSuivant.className).toBe('bouton bouton--principal');
+      expect(versSuivant.getAttribute('data-mesure')).toBe('cours-suivant');
+      const entrainement = lien('S’entraîner sur ce thème', haut);
+      expect(entrainement.getAttribute('href')).toBe('/entrainement/balisage');
+      expect(entrainement.getAttribute('data-mesure')).toBe('cours-fait-entrainement');
+      expect(entrainement.className).toBe('bouton');
+      // Le lien n'est qu'en haut : la liste garde « Refaire », rien d'autre.
+      const liste = document.querySelector<HTMLElement>('[data-parcours]')!;
+      expect(liste.textContent).not.toContain('Cours suivant');
+      expect(lien('Refaire : Marques latérales', liste)).toBeTruthy();
+      mesuresUniques();
+    });
+
+    it('un cours à moitié fait laisse le haut vide', () => {
+      progression({ 'balisage-lateral': toutFait['balisage-lateral'] });
+      pageCours({ cours: balisage, suivant }, 1, true);
+      monterCours(document);
+      expect(document.querySelector('[data-cours-fin]')!.childElementCount).toBe(0);
+      expect(lien('Reprendre : Marques cardinales').className).toBe('bouton bouton--principal');
+    });
+
+    it('ne s’empile pas quand le script repasse', () => {
+      progression(toutFait);
+      pageCours({ cours: balisage, suivant }, 1, true);
+      monterCours(document);
+      monterCours(document);
+      expect(document.querySelectorAll('[data-cours-fin] a')).toHaveLength(2);
+    });
+
+    it('le dernier cours du parcours n’a pas de suite à tendre : tout reste dans la liste', () => {
+      progression({ 'barre-veille-vitesse': { faiteLe: '2026-09-05', bonnes: 1, total: 1 } });
+      pageCours({ cours: rencontres }, 1, true);
+      monterCours(document);
+      expect(document.querySelector('[data-cours-fin]')!.childElementCount).toBe(0);
+    });
   });
 
   it('disent que c’était le dernier cours quand il n’y a pas de suivant', () => {

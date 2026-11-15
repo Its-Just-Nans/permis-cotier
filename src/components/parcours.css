@@ -132,3 +132,6 @@ html:not([data-app]) .etapes li { border-top: 1px solid var(--filet); }
 }
 .coursListe__promesse { max-width: 52ch; }
 .coursListe__meta { font-size: 0.8125rem; }
+
+/* La suite d'un cours fait, en haut de la page du cours (site). */
+[data-cours-fin]:not(:empty) { margin-block: 1.5rem; }
