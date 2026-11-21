@@ -37,6 +37,13 @@
 /partage/*
   Cache-Control: public, max-age=86400
 
+# Les captures de la vitrine et leurs dérivés (`-320`, `-480`) ne portent pas
+# d'empreinte : un jour, sans `immutable`, pour qu'une capture refaite parte
+# sous vingt-quatre heures. Avant cette règle, chacune se revalidait à chaque
+# visite. Le motif ne recoupe aucun autre porteur de durée.
+/vitrine/*
+  Cache-Control: public, max-age=86400
+
 # La banque, sortie du HTML. Le nom porte la version : le fichier ne change
 # jamais sous ce nom-là, il se garde donc pour de bon.
 /banque/v/*
