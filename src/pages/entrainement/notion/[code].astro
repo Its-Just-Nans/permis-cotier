@@ -2,6 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import SansScript from '../../../components/SansScript.astro';
 import Quiz from '../../../components/Quiz.tsx';
+import { silhouetteHtml } from '../../../components/quiz/silhouette-statique';
 import { cheminBanque, questionsPubliees } from '../../../lib/banque';
 import { NOTIONS } from '../../../lib/notions';
 import { cheminLecon } from '../../../lib/parcours';
@@ -51,7 +52,9 @@ const banque = cheminBanque();
       source={banque}
       theme={notion.theme}
       notion={{ code: notion.code, nom: notion.nom }}
-    />
+    >
+      <Fragment slot="fallback" set:html={silhouetteHtml({ examen: false })} />
+    </Quiz>
     <p class="discret notion__liens web-seulement">
       {publiees === 0
         ? 'Cette notion n’a pas encore de question.'

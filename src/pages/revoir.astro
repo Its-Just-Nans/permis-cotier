@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import SansScript from '../components/SansScript.astro';
 import Quiz from '../components/Quiz.tsx';
+import { silhouetteHtml } from '../components/quiz/silhouette-statique';
 import { cheminBanque } from '../lib/banque';
 
 // La série du jour : ce qui est dû, le plus en retard d'abord, complété par
@@ -27,6 +28,8 @@ const banque = cheminBanque();
       <a href="/entrainement">Entraînement</a> · Ta série du jour
     </p>
     <SansScript ecran="La série du jour" />
-    <Quiz client:only="react" mode="entrainement" source={banque} revoir />
+    <Quiz client:only="react" mode="entrainement" source={banque} revoir>
+      <Fragment slot="fallback" set:html={silhouetteHtml({ examen: false })} />
+    </Quiz>
   </div>
 </Base>
