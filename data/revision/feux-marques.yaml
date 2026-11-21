@@ -16,8 +16,8 @@ sections:
     - 'Feux de côté : vert à tribord, rouge à bâbord, 112,5 degrés chacun.'
     - 'Poupe : blanc, 135 degrés. Remorquage : jaune, 135 degrés.'
     - 'Tout l’horizon : 360 degrés. Feu à éclats : 120 éclats par minute au moins.'
-  - piege: Les quatre secteurs s’échangent à l’épreuve. Le fanal unique des feux de côté est permis sous 20 mètres,
-      pas sous 12.
+  - piege: 'Les quatre secteurs s’échangent à l’épreuve. Le fanal unique des feux de côté est permis à tout navire de
+      moins de 20 mètres : le seuil est 20, pas 12.'
 - titre: Ce que chaque feu porte, la longueur commande
   notions:
   - feux-portee

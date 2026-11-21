@@ -57,7 +57,7 @@ etapes:
       - "Oc, à occultations : la lumière dure plus que l’obscurité"
       - "Iso, isophase : lumière et obscurité durent le même temps"
       - "LFl : un éclat long, d’au moins 2 secondes"
-      - "Q, scintillant : de 50 à 79 éclats par minute ; VQ, rapide : de 100 à 159"
+      - "Q, scintillant : de 50 à 79 éclats par minute ; VQ, rapide : de 80 à 159"
       - "Mo, morse : Mo(A) bat un point puis un trait ; Al, alternatif, change de couleur"
   - titre: Un feu à occultations, vu de nuit
     texte: >-
@@ -93,4 +93,4 @@ meta:
   cree_le: '2026-09-05'
   genere_par: claude
   relu_par: alexis
-  relu_le: '2026-09-06'
+  relu_le: '2026-11-21'
