@@ -548,3 +548,123 @@ def test_le_workflow_ios_reste_a_l_ios():
     texte, _, _ = _workflow("app-ios.yml")
     assert "MAC_OS" not in texte and "Catalyst" not in texte
     assert "-destination generic/platform=iOS " in texte
+
+
+# --- Sous-titre et mots-clés suivent le dépôt --------------------------------
+#
+# La CI crée et soumet la version iOS sans fenêtre pour une saisie à la main :
+# c'est elle qui pose les mots-clés de la version (par plateforme) et le
+# sous-titre de l'app, depuis `docs/fiche-app-store/`.
+
+
+def _faux_api(monkeypatch, pages):
+    import app_store
+
+    appels = []
+
+    def appeler(methode, url, corps=None):
+        appels.append((methode, url.split("?")[0], corps))
+        return pages.get((methode, url.split("?")[0]), {"data": []})
+
+    monkeypatch.setattr(app_store, "appeler", appeler)
+    return appels
+
+
+def test_les_fichiers_de_fiche_tiennent_dans_les_limites_d_apple():
+    import app_store
+
+    for plateforme in app_store.PLATEFORMES:
+        mots = app_store.lire_mots_cles(plateforme)
+        assert 0 < len(mots) <= app_store.LIMITE_MOTS_CLES
+        assert " ," not in mots and ", " not in mots
+    assert 0 < len(app_store.lire_sous_titre()) <= app_store.LIMITE_SOUS_TITRE
+    assert app_store.MOTS_CLES_PAR_PLATEFORME["MAC_OS"].parent.name == "mac"
+
+
+def test_un_fichier_trop_long_est_refuse(tmp_path):
+    import pytest
+    import app_store
+
+    trop = tmp_path / "mots-cles.txt"
+    trop.write_text("a" * 101 + "\n", encoding="utf-8")
+    with pytest.raises(SystemExit):
+        app_store.lire_champ(trop, app_store.LIMITE_MOTS_CLES)
+
+
+def test_les_mots_cles_et_les_nouveautes_partent_ensemble(monkeypatch):
+    import app_store
+
+    url = "/v1/appStoreVersions/v9/appStoreVersionLocalizations"
+    appels = _faux_api(monkeypatch, {("GET", url): {"data": [
+        {"type": "appStoreVersionLocalizations", "id": "l9", "attributes": {"locale": "fr-FR"}}]}})
+    app_store.poser_localisation("v9", {"whatsNew": "Du neuf", "keywords": "a,b"})
+    assert appels[-1] == ("PATCH", "/v1/appStoreVersionLocalizations/l9", {
+        "data": {"type": "appStoreVersionLocalizations", "id": "l9",
+                 "attributes": {"whatsNew": "Du neuf", "keywords": "a,b"}}})
+
+
+def test_sans_localisation_elle_est_creee(monkeypatch):
+    import app_store
+
+    appels = _faux_api(monkeypatch, {})
+    app_store.poser_localisation("v9", {"keywords": "a,b"})
+    methode, url, corps = appels[-1]
+    assert (methode, url) == ("POST", "/v1/appStoreVersionLocalizations")
+    assert corps["data"]["attributes"] == {"locale": "fr-FR", "keywords": "a,b"}
+    assert corps["data"]["relationships"]["appStoreVersion"]["data"]["id"] == "v9"
+
+
+def _app_infos(etat):
+    return {"data": [
+        {"type": "appInfos", "id": "i-vente", "attributes": {"state": "READY_FOR_DISTRIBUTION"}},
+        {"type": "appInfos", "id": "i-neuve", "attributes": {"state": etat}},
+    ]}
+
+
+def test_le_sous_titre_se_pose_sur_l_app_info_modifiable(monkeypatch):
+    import app_store
+
+    appels = _faux_api(monkeypatch, {
+        ("GET", f"/v1/apps/{app_store.APP_ID}/appInfos"): _app_infos("PREPARE_FOR_SUBMISSION"),
+        ("GET", "/v1/appInfos/i-neuve/appInfoLocalizations"): {"data": [
+            {"type": "appInfoLocalizations", "id": "en", "attributes": {"locale": "en-US", "subtitle": "x"}},
+            {"type": "appInfoLocalizations", "id": "fr", "attributes": {"locale": "fr-FR", "subtitle": "Ancien"}},
+        ]},
+    })
+    assert app_store.poser_sous_titre("Nouveau") is True
+    assert appels[-1] == ("PATCH", "/v1/appInfoLocalizations/fr", {
+        "data": {"type": "appInfoLocalizations", "id": "fr", "attributes": {"subtitle": "Nouveau"}}})
+
+
+def test_un_sous_titre_deja_juste_n_est_pas_repose(monkeypatch):
+    import app_store
+
+    appels = _faux_api(monkeypatch, {
+        ("GET", f"/v1/apps/{app_store.APP_ID}/appInfos"): _app_infos("PREPARE_FOR_SUBMISSION"),
+        ("GET", "/v1/appInfos/i-neuve/appInfoLocalizations"): {"data": [
+            {"type": "appInfoLocalizations", "id": "fr", "attributes": {"locale": "fr-FR", "subtitle": "Pareil"}}]},
+    })
+    assert app_store.poser_sous_titre("Pareil") is True
+    assert all(m == "GET" for m, _, _ in appels)
+
+
+def test_sans_app_info_modifiable_le_sous_titre_attend_sans_bloquer(monkeypatch, capsys):
+    import app_store
+
+    appels = _faux_api(monkeypatch, {
+        ("GET", f"/v1/apps/{app_store.APP_ID}/appInfos"): _app_infos("WAITING_FOR_REVIEW"),
+    })
+    assert app_store.poser_sous_titre("Nouveau") is False
+    assert all(m == "GET" for m, _, _ in appels)
+    assert "sous-titre" in capsys.readouterr().out.lower()
+
+
+def test_un_refus_de_l_api_sur_le_sous_titre_ne_bloque_pas_la_revue(monkeypatch, capsys):
+    import app_store
+
+    def appeler(methode, url, corps=None):
+        raise app_store.ErreurApi("GET appInfos\nHTTP 409")
+
+    monkeypatch.setattr(app_store, "appeler", appeler)
+    assert app_store.poser_sous_titre("Nouveau") is False
+    assert "409" in capsys.readouterr().out
