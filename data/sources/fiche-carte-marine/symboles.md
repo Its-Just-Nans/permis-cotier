@@ -127,7 +127,7 @@ sépare les caractères tient en une comparaison de durées.
   plus fréquente. Oc(2) désigne un groupe de deux occultations.
 - **Iso**, feu isophase. Lumière et obscurité durent le même temps.
 - **Q**, feu scintillant, de cinquante à soixante-dix-neuf éclats par minute.
-  **VQ**, scintillant rapide, de cent à cent cinquante-neuf. **UQ**, ultra
+  **VQ**, scintillant rapide, de quatre-vingts à cent cinquante-neuf. **UQ**, ultra
   rapide, au-delà.
 - **Mo**, feu à signal Morse, suivi de sa lettre : Mo(A) bat un point puis un
   trait.

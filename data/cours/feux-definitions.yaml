@@ -50,7 +50,8 @@ piege: >-
   Les quatre secteurs se ressemblent et l’épreuve les échange. 112,5 degrés est celui d’un
   feu de côté, 225 celui du feu de tête de mât, 135 celui du feu de poupe et du feu de
   remorquage, 360 celui d’un feu visible sur tout l’horizon. Second échange fréquent : la
-  combinaison des feux de côté en un fanal unique est permise sous 20 mètres, pas sous 12.
+  combinaison des feux de côté en un fanal unique est permise à tout navire de moins de
+  20 mètres : le seuil est 20, pas 12.
 retenir:
   - "Tête de mât : blanc, 225 degrés, vers l’avant."
   - "Feux de côté : vert à tribord, rouge à bâbord, 112,5 degrés chacun."
@@ -67,5 +68,4 @@ sources:
 meta:
   cree_le: '2026-09-05'
   genere_par: claude
-  relu_par: alexis
-  relu_le: '2026-09-06'
+  relu_par: claude
