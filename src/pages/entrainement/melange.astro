@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import SansScript from '../../components/SansScript.astro';
 import Quiz from '../../components/Quiz.tsx';
+import { silhouetteHtml } from '../../components/quiz/silhouette-statique';
 import { cheminBanque } from '../../lib/banque';
 
 // La voie courte de l'écran de départ de l'examen : dix questions tirées dans
@@ -19,6 +20,8 @@ const banque = cheminBanque();
   <div class="page page--etroite">
     <p class="chapitre web-seulement" style="padding-top:1.5rem"><a href="/entrainement">Entraînement</a> · Dix questions mêlées</p>
     <SansScript ecran="L’entraînement" />
-    <Quiz client:only="react" mode="entrainement" source={banque} melange />
+    <Quiz client:only="react" mode="entrainement" source={banque} melange>
+      <Fragment slot="fallback" set:html={silhouetteHtml({ examen: false })} />
+    </Quiz>
   </div>
 </Base>
