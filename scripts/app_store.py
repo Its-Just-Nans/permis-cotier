@@ -145,12 +145,24 @@ def lire_a_tester(chemin: Path = A_TESTER) -> str:
 # --- La fiche dit le vrai nombre de questions (2.3) ---------------------------
 
 # Tout texte de la fiche où un compte de questions peut apparaître. Les
-# nouveautés et « À tester » partent par ce script ; description, sous-titre,
-# mots-clés et notes au relecteur se posent à la main, et leur copie vit dans
-# `docs/` pour qu'une retouche ne reconstruise pas l'app.
+# nouveautés, « À tester », mots-clés et sous-titre partent par ce script à la
+# soumission ; description et notes au relecteur se posent à la main. Tout vit
+# dans `docs/`, pour qu'une retouche ne reconstruise pas l'app.
 FICHE_DOSSIER = RACINE / "docs" / "fiche-app-store"
 # La fiche Mac (`mac/`) a sa description, ses mots-clés et ses notes ; le
 # sous-titre est commun à l'app.
+# Les mots-clés sont propres à chaque version, donc à chaque plateforme ; le
+# sous-titre appartient à l'app (son `appInfo`), commun à l'iPhone et au Mac.
+MOTS_CLES_PAR_PLATEFORME = {
+    "IOS": FICHE_DOSSIER / "mots-cles.txt",
+    "MAC_OS": FICHE_DOSSIER / "mac" / "mots-cles.txt",
+}
+SOUS_TITRE = FICHE_DOSSIER / "sous-titre.txt"
+LIMITE_MOTS_CLES = 100
+LIMITE_SOUS_TITRE = 30
+# Un `appInfo` ne se modifie que tant qu'il n'est ni en vente ni en revue.
+APP_INFO_MODIFIABLE = {"PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "METADATA_REJECTED"}
+
 FICHE = [
     NOUVEAUTES, A_TESTER, A_TESTER_MAC,
     *sorted(FICHE_DOSSIER.glob("*.txt")), *sorted((FICHE_DOSSIER / "mac").glob("*.txt")),
@@ -543,20 +555,71 @@ def lire_nouveautes() -> str:
     return texte
 
 
-def poser_nouveautes(version_id: str, texte: str) -> None:
+def lire_champ(chemin: Path, limite: int) -> str:
+    nom = chemin.relative_to(RACINE) if chemin.is_relative_to(RACINE) else chemin
+    texte = chemin.read_text(encoding="utf-8").strip() if chemin.is_file() else ""
+    if not texte:
+        raise SystemExit(f"{nom} est vide.")
+    if len(texte) > limite:
+        raise SystemExit(f"{nom} fait {len(texte)} caractères, Apple en prend {limite}.")
+    return texte
+
+
+def lire_mots_cles(plateforme: str = "IOS") -> str:
+    return lire_champ(MOTS_CLES_PAR_PLATEFORME[plateforme], LIMITE_MOTS_CLES)
+
+
+def lire_sous_titre() -> str:
+    return lire_champ(SOUS_TITRE, LIMITE_SOUS_TITRE)
+
+
+def poser_localisation(version_id: str, attributs: dict[str, str]) -> None:
+    """Nouveautés et mots-clés de la version, en fr-FR."""
     donnees, _ = lister(f"/v1/appStoreVersions/{version_id}/appStoreVersionLocalizations", {"limit": "50"})
     existante = next((l for l in donnees if l["attributes"].get("locale") == LOCALE), None)
     if existante:
         appeler("PATCH", f"/v1/appStoreVersionLocalizations/{existante['id']}", {
             "data": {"type": "appStoreVersionLocalizations", "id": existante["id"],
-                     "attributes": {"whatsNew": texte}},
+                     "attributes": attributs},
         })
     else:
         appeler("POST", "/v1/appStoreVersionLocalizations", {
             "data": {"type": "appStoreVersionLocalizations",
-                     "attributes": {"locale": LOCALE, "whatsNew": texte},
+                     "attributes": {"locale": LOCALE, **attributs},
                      "relationships": {"appStoreVersion": {"data": {"type": "appStoreVersions", "id": version_id}}}},
         })
+
+
+def poser_sous_titre(texte: str) -> bool:
+    """Le sous-titre de l'app, si son `appInfo` modifiable existe. Jamais bloquant.
+
+    Quand l'autre plateforme est en revue, l'`appInfo` est verrouillé : la
+    version part sans, le sous-titre attendra la soumission suivante.
+    """
+    try:
+        infos, _ = lister(f"/v1/apps/{APP_ID}/appInfos", {"limit": "50"})
+        modifiable = next(
+            (i for i in infos
+             if (i["attributes"].get("state") or i["attributes"].get("appStoreState")) in APP_INFO_MODIFIABLE),
+            None,
+        )
+        if not modifiable:
+            print("Sous-titre non posé : aucune fiche d'app modifiable (une revue en cours la verrouille).")
+            return False
+        locs, _ = lister(f"/v1/appInfos/{modifiable['id']}/appInfoLocalizations", {"limit": "50"})
+        loc = next((l for l in locs if l["attributes"].get("locale") == LOCALE), None)
+        if not loc:
+            print(f"Sous-titre non posé : pas de fiche {LOCALE}.")
+            return False
+        if loc["attributes"].get("subtitle") != texte:
+            appeler("PATCH", f"/v1/appInfoLocalizations/{loc['id']}", {
+                "data": {"type": "appInfoLocalizations", "id": loc["id"], "attributes": {"subtitle": texte}},
+            })
+            print(f"Sous-titre posé : « {texte} ».")
+        return True
+    except ErreurApi as erreur:
+        print(f"Sous-titre non posé, la revue part quand même :\n{erreur}")
+        return False
 
 
 def envoyer_en_revue(version_id: str, plateforme: str = "IOS") -> None:
@@ -604,6 +667,8 @@ def soumettre(version: str, build: int, commit: str, sans_revue: bool, plateform
 
     premiere = not any(v.etat in VENDUES for v in versions)
     nouveautes = None if premiere else lire_nouveautes()
+    mots_cles = lire_mots_cles(plateforme)
+    sous_titre = lire_sous_titre()
 
     existante = next((v for c, v in brutes.items() if cle_version(c) == cle_version(version)), None)
     if existante:
@@ -618,8 +683,11 @@ def soumettre(version: str, build: int, commit: str, sans_revue: bool, plateform
 
     appeler("PATCH", f"/v1/appStoreVersions/{version_id}/relationships/build",
             {"data": {"type": "builds", "id": objet_build["id"]}})
+    attributs = {"keywords": mots_cles}
     if nouveautes:
-        poser_nouveautes(version_id, nouveautes)
+        attributs["whatsNew"] = nouveautes
+    poser_localisation(version_id, attributs)
+    poser_sous_titre(sous_titre)
     envoyer_en_revue(version_id, plateforme)
     print(f"{version} ({build}) envoyée en revue.")
     return 0
