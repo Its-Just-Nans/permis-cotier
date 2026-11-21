@@ -58,8 +58,13 @@ relue.
   relecture contre la source, au navigateur ou au simulateur.
 
 Une session cloud **ne fusionne jamais elle-même** : elle ouvre la PR et
-s'arrête. `gh pr merge --auto` fusionne sur-le-champ, la protection de `main`
-n'exige aucune vérification : attendre la CI.
+s'arrête.
+
+**`main` est protégée** (ruleset « main protégée », 21 novembre 2026) : pas de
+poussée directe, tout passe par une PR, la fusion attend le job `verifier` de la
+CI au vert, ni force-push ni suppression. `gh pr merge --auto` attend donc la CI
+de lui-même. Personne n'a de passe-droit : en urgence, Alexis désactive le
+ruleset (Settings > Rules) et le réactive après.
 
 ## La passation
 
