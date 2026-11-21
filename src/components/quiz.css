@@ -828,6 +828,16 @@ div.sources ul { margin: 0; }
    Le battement est lent et faible exprès : c'est une attente d'une fraction de
    seconde sur une connexion normale, un clignotement y serait plus visible que
    le chargement. */
+/* Le pied de page ne doit pas se voir bouger quand la question remplace la
+   silhouette : une question, avec sa leçon ou ses visuels, est plus haute que
+   quelques barres. La silhouette tient donc au moins un écran, et le pied de
+   page reste sous la ligne de flottaison avant comme après, là où un
+   déplacement ne compte pas comme un saut. */
+.silhouette {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
 .silhouette__enonce {
   display: flex;
   flex-direction: column;

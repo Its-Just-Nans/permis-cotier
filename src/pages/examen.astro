@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import SansScript from '../components/SansScript.astro';
 import Quiz from '../components/Quiz.tsx';
+import { silhouetteHtml } from '../components/quiz/silhouette-statique';
 import { cheminBanque } from '../lib/banque';
 import { prochaineLecon } from '../lib/parcours';
 import { POUR_APP } from '../lib/cible';
@@ -30,6 +31,8 @@ const premiereLecon = POUR_APP ? undefined : { chemin: premiere.chemin, nom: pre
 >
   <div class="page">
     <SansScript ecran="L’examen blanc" />
-    <Quiz client:only="react" mode="examen" source={banque} premiereLecon={premiereLecon} />
+    <Quiz client:only="react" mode="examen" source={banque} premiereLecon={premiereLecon}>
+      <Fragment slot="fallback" set:html={silhouetteHtml({ examen: true })} />
+    </Quiz>
   </div>
 </Base>

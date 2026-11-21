@@ -8,6 +8,7 @@ import { COURS, cheminCours, leconsDuCours, leconsDuParcours } from '../lib/parc
 import { codesLeconsEcrites, compteLeconsEcrites } from '../lib/lecons';
 import { groupeDuTheme } from '../lib/groupes';
 import { SITE, APP_STORE, absolue } from '../lib/seo';
+import { captureVitrine } from '../lib/vitrine';
 import SCRIPT_BANDE from 'virtual:bande-avant-rendu';
 
 const themes = await themesAvecComptes();
@@ -73,9 +74,8 @@ const liste = {
   })),
 };
 
-// Les captures de l'app, 640 px de large, servies hors précache
+// Les captures de l'app, en `srcset` (`lib/vitrine.ts`), servies hors précache
 // (`hors-ligne.ts`). Leur texte alternatif dit ce que l'écran montre.
-const CAPTURE = { width: 640, height: 1391 };
 ---
 
 <Base
@@ -152,9 +152,8 @@ const CAPTURE = { width: 640, height: 1391 };
     {!POUR_APP && (
       <figure class="telephone rang__image">
         <img
-          src="/vitrine/cours.webp"
           alt="L’écran du cours dans l’app : la leçon à reprendre, puis les chapitres du parcours avec leur avancement."
-          {...CAPTURE}
+          {...captureVitrine('cours', '(min-width: 1000px) 252px, 228px')}
           loading="lazy"
           decoding="async"
         />
@@ -184,18 +183,16 @@ const CAPTURE = { width: 640, height: 1391 };
       <div class="duo rang__image">
         <figure class="telephone duo__avant">
           <img
-            src="/vitrine/examen.webp"
             alt="Une question d’examen blanc : un feu d’écluse en image, le chrono à treize secondes, la première question sur quarante, trois propositions et le bouton « Passer »."
-            {...CAPTURE}
+            {...captureVitrine('examen', '(min-width: 1000px) 202px, 164px')}
             loading="lazy"
             decoding="async"
           />
         </figure>
         <figure class="telephone duo__arriere">
           <img
-            src="/vitrine/resultat.webp"
             alt="Le résultat d’un examen blanc : 36 sur 40, reçu avec quatre erreurs sur les cinq admises, le pavillon Q hissé, puis le score de chaque thème."
-            {...CAPTURE}
+            {...captureVitrine('resultat', '(min-width: 1000px) 202px, 164px')}
             loading="lazy"
             decoding="async"
           />
@@ -229,9 +226,8 @@ const CAPTURE = { width: 640, height: 1391 };
     {!POUR_APP && (
       <figure class="telephone rang__image">
         <img
-          src="/vitrine/correction.webp"
           alt="Une correction dans l’app : « Juste » sur un navire vu de nuit, l’explication de son feu rouge de bâbord, puis la règle 21 du RIPAM qui la fonde."
-          {...CAPTURE}
+          {...captureVitrine('correction', '(min-width: 1000px) 252px, 228px')}
           loading="lazy"
           decoding="async"
         />
@@ -298,9 +294,8 @@ const CAPTURE = { width: 640, height: 1391 };
         </div>
         <figure class="telephone app__telephone">
           <img
-            src="/vitrine/accueil.webp"
             alt="L’accueil de l’app : quatorze questions à revoir aujourd’hui, puis la leçon à continuer, le dernier examen blanc à 36 sur 40 et la date de l’épreuve, dans dix-huit jours."
-            {...CAPTURE}
+            {...captureVitrine('accueil', '(min-width: 1000px) 284px, 260px')}
             loading="lazy"
             decoding="async"
           />

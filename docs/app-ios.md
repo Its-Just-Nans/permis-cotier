@@ -28,10 +28,14 @@ donc **avant la fusion** qui ouvre une version, pas après.
    fiche suive. Sous cent, le nombre parle d'un examen ou d'une série.
 
 `docs/fiche-app-store/` est la copie de ce qu'App Store Connect affiche
-(description, sous-titre, mots-clés, notes au relecteur) : ces champs se posent
-à la main, le script ne pousse que les nouveautés et « À tester ». Sous `docs/`,
-une retouche de fiche ne reconstruit pas l'app (`hors_app()`). Toute correction
-de la copie se reporte en ligne, et inversement.
+(description, sous-titre, mots-clés, notes au relecteur). Depuis le 21 novembre
+2026, `soumettre` pose à chaque soumission les nouveautés, « À tester », les
+mots-clés de la plateforme (`mots-cles.txt`, `mac/mots-cles.txt`) et le
+sous-titre (`sous-titre.txt`, commun à l'app). Le sous-titre ne se pose que sur
+un `appInfo` modifiable : si l'autre plateforme est en revue, il attend la
+soumission suivante, sans bloquer. Description et notes au relecteur restent à
+la main. Sous `docs/`, une retouche de fiche ne reconstruit pas l'app
+(`hors_app()`) : elle part avec la prochaine version.
 
 ## 31 octobre 2026 (soir) — la revue Mac et la signature du SDK
 

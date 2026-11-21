@@ -1,20 +1,20 @@
 ---
 import Base from '../layouts/Base.astro';
 import { APP_STORE, SITE, logicielApp } from '../lib/seo';
+import { captureVitrine } from '../lib/vitrine';
 
 const base = Astro.site ?? new URL(SITE.domaine);
-const CAPTURE = { width: 640, height: 1391 };
 const captures = [
   {
-    src: '/vitrine/cours.webp',
+    ...captureVitrine('cours', '(min-width: 700px) 207px, 108px'),
     alt: 'L’écran du cours dans l’app : la leçon à reprendre, puis les chapitres du parcours avec leur avancement.',
   },
   {
-    src: '/vitrine/examen.webp',
+    ...captureVitrine('examen', '(min-width: 700px) 207px, 108px'),
     alt: 'Une question d’examen blanc : un feu d’écluse en image, le chrono à treize secondes, la première question sur quarante, trois propositions et le bouton « Passer ».',
   },
   {
-    src: '/vitrine/resultat.webp',
+    ...captureVitrine('resultat', '(min-width: 700px) 207px, 108px'),
     alt: 'Le résultat d’un examen blanc : 36 sur 40, reçu avec quatre erreurs sur les cinq admises, le pavillon Q hissé, puis le score de chaque thème.',
   },
 ];
@@ -66,7 +66,7 @@ const captures = [
       {captures.map((c) => (
         <li>
           <figure class="telephone">
-            <img src={c.src} alt={c.alt} {...CAPTURE} loading="lazy" decoding="async" />
+            <img {...c} loading="lazy" decoding="async" />
           </figure>
         </li>
       ))}

@@ -91,7 +91,7 @@ sections:
             lignes: [À égalité]
       - regles:
           - Le chiffre entre parenthèses compte les éclats, jamais les secondes. La période est le nombre suivi de s.
-          - "LFl : un éclat long, d’au moins 2 secondes. Q : de 50 à 79 éclats par minute, VQ : de 100 à 159."
+          - "LFl : un éclat long, d’au moins 2 secondes. Q : de 50 à 79 éclats par minute, VQ : de 80 à 159."
       - piege: >-
           Confondre 12m et 9M. La casse tranche : m minuscule pour la hauteur en mètres, M majuscule pour la
           portée en milles, et la hauteur est écrite avant la portée.
