@@ -162,6 +162,10 @@ sources.
 
 ## Pièges de code
 
+- **Toucher une leçon ou un YAML de `data/revision/` périme sa fiche PDF**, même pour la seule méta
+  (`relu_par`, `relu_le`) : l'empreinte de `empreintes.json` couvre le fichier entier, et la CI rougit
+  (« PDF périmé »). `npm run build && npm run fiches`, puis ne garder que les PDF concernés et
+  `empreintes.json` (`git checkout` des autres : Chrome y réécrit la date).
 - **La typographie française est posée au build** (`scripts/typographie.mjs`, `src/lib/insecables.ts`) :
   HTML de `dist/`, sources `src/**/*.ts(x)` via un greffon Vite, banque via `versAffichable`. Ne pas
   recopier d'insécable à la main, ne pas toucher `data/questions/`. Une chaîne de code entière comme
